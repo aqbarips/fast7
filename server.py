@@ -569,6 +569,42 @@ def delete_store(store_id):
     return jsonify({'success': True, 'deleted': store_id})
 
 # ----------------------------------------------------------------
+#  CUSTOM DOMAIN & SUBDOMAIN ROUTING (e.g. my-store.com -> store)
+# ----------------------------------------------------------------
+@app.before_request
+def handle_custom_domains():
+    path = request.path
+    if path.startswith('/api/') or path.startswith('/stores/'):
+        return None
+
+    host = request.host.split(':')[0].lower()
+    main_hosts = ['localhost', '127.0.0.1', 'fast7.onrender.com']
+
+    if host not in main_hosts:
+        matched_store_id = None
+        if supabase:
+            try:
+                res = supabase.table('stores').select('*').execute()
+                if res.data:
+                    for s in res.data:
+                        c_dom = (s.get('custom_domain') or '').lower().strip()
+                        sub_dom = (s.get('subdomain') or '').lower().strip()
+                        if c_dom and (host == c_dom or host == f"www.{c_dom}"):
+                            matched_store_id = s.get('id')
+                            break
+                        elif sub_dom and host.startswith(sub_dom + '.'):
+                            matched_store_id = s.get('id')
+                            break
+            except Exception as e:
+                pass
+
+        if matched_store_id:
+            if path in ['/', '']:
+                return serve_store_index(matched_store_id)
+            elif path in ['/admin', '/admin.html']:
+                return serve_store_admin(matched_store_id)
+
+# ----------------------------------------------------------------
 #  STATIC FILES & CLEAN URLS (WITHOUT .html)
 # ----------------------------------------------------------------
 @app.route('/')
