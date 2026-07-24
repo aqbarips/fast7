@@ -14,9 +14,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fast7-prod-change-this')
 CORS(app)
 
-STORES_DIR = 'stores'
-DATA_DIR = 'data'
-TEMPLATES_DIR = 'templates'
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+STORES_DIR = os.path.join(ROOT_DIR, 'stores')
+DATA_DIR = os.path.join(ROOT_DIR, 'data')
+TEMPLATES_DIR = os.path.join(ROOT_DIR, 'templates')
+AGENCY_DIR = os.path.join(ROOT_DIR, 'agency')
 BASE_TEMPLATE_DIR = os.path.join(TEMPLATES_DIR, 'default')
 PORT = 8080
 
@@ -654,38 +656,38 @@ def serve_store_admin(store_id):
 
 @app.route('/<path:path>')
 def static_files(path):
-    # 1. Exact path check
-    if os.path.exists(path) and os.path.isfile(path):
+    # 1. Direct file in ROOT_DIR
+    full_path = os.path.join(ROOT_DIR, path)
+    if os.path.exists(full_path) and os.path.isfile(full_path):
         ext = os.path.splitext(path)[1].lower()
         if ext in ['.js', '.html']:
-            resp = make_response(send_from_directory('.', path))
+            resp = make_response(send_from_directory(ROOT_DIR, path))
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
-        return send_from_directory('.', path)
+        return send_from_directory(ROOT_DIR, path)
 
-    # 2. Check root clean URL (without .html)
+    # 2. Clean URL in ROOT_DIR (without .html)
     if not path.endswith('.html'):
-        path_html = path + '.html'
-        if os.path.exists(path_html) and os.path.isfile(path_html):
-            resp = make_response(send_from_directory('.', path_html))
+        if os.path.exists(full_path + '.html') and os.path.isfile(full_path + '.html'):
+            resp = make_response(send_from_directory(ROOT_DIR, path + '.html'))
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
 
-    # 3. Agency directory fallback (exact path)
-    agency_path = os.path.join('agency', path)
-    if os.path.exists(agency_path) and os.path.isfile(agency_path):
-        ext = os.path.splitext(agency_path)[1].lower()
+    # 3. Agency directory fallback (e.g. /login.html or /create-store.html -> agency/create-store.html)
+    agency_file = os.path.join(AGENCY_DIR, path)
+    if os.path.exists(agency_file) and os.path.isfile(agency_file):
+        ext = os.path.splitext(path)[1].lower()
         if ext in ['.js', '.html']:
-            resp = make_response(send_from_directory('agency', path))
+            resp = make_response(send_from_directory(AGENCY_DIR, path))
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
-        return send_from_directory('agency', path)
+        return send_from_directory(AGENCY_DIR, path)
 
-    # 4. Agency directory clean URL (without .html)
+    # 4. Agency directory clean URL (e.g. /login or /create-store -> agency/create-store.html)
     if not path.endswith('.html'):
-        agency_path_html = os.path.join('agency', path + '.html')
-        if os.path.exists(agency_path_html) and os.path.isfile(agency_path_html):
-            resp = make_response(send_from_directory('agency', path + '.html'))
+        agency_file_html = os.path.join(AGENCY_DIR, path + '.html')
+        if os.path.exists(agency_file_html) and os.path.isfile(agency_file_html):
+            resp = make_response(send_from_directory(AGENCY_DIR, path + '.html'))
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
 
