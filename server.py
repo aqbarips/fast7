@@ -611,7 +611,35 @@ def handle_custom_domains():
 # ----------------------------------------------------------------
 @app.route('/')
 def index():
-    resp = make_response(send_from_directory('.', 'index.html'))
+    resp = make_response(send_from_directory(ROOT_DIR, 'index.html'))
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return resp
+
+@app.route('/login')
+@app.route('/login.html')
+def route_login():
+    resp = make_response(send_from_directory(AGENCY_DIR, 'login.html'))
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return resp
+
+@app.route('/create-store')
+@app.route('/create-store.html')
+def route_create_store():
+    resp = make_response(send_from_directory(AGENCY_DIR, 'create-store.html'))
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return resp
+
+@app.route('/dashboard')
+@app.route('/dashboard.html')
+def route_dashboard():
+    resp = make_response(send_from_directory(AGENCY_DIR, 'dashboard.html'))
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return resp
+
+@app.route('/store-details')
+@app.route('/store-details.html')
+def route_store_details():
+    resp = make_response(send_from_directory(AGENCY_DIR, 'store-details.html'))
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     return resp
 
