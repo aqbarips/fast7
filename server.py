@@ -702,37 +702,51 @@ def static_files(path):
     if os.path.exists(full_path) and os.path.isfile(full_path):
         ext = os.path.splitext(path)[1].lower()
         if ext in ['.js', '.html']:
-            resp = make_response(send_from_directory(ROOT_DIR, path))
+            resp = make_response(send_file(full_path))
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
-        return send_from_directory(ROOT_DIR, path)
+        return send_file(full_path)
 
     # 2. Clean URL in ROOT_DIR (without .html)
     if not path.endswith('.html'):
         if os.path.exists(full_path + '.html') and os.path.isfile(full_path + '.html'):
-            resp = make_response(send_from_directory(ROOT_DIR, path + '.html'))
+            resp = make_response(send_file(full_path + '.html'))
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
 
-    # 3. Agency directory fallback (e.g. /login.html or /create-store.html -> agency/create-store.html)
+    # 3. Agency directory fallback
     agency_file = os.path.join(AGENCY_DIR, path)
     if os.path.exists(agency_file) and os.path.isfile(agency_file):
         ext = os.path.splitext(path)[1].lower()
         if ext in ['.js', '.html']:
-            resp = make_response(send_from_directory(AGENCY_DIR, path))
+            resp = make_response(send_file(agency_file))
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
-        return send_from_directory(AGENCY_DIR, path)
+        return send_file(agency_file)
 
-    # 4. Agency directory clean URL (e.g. /login or /create-store -> agency/create-store.html)
+    # 4. Agency directory clean URL (without .html)
     if not path.endswith('.html'):
         agency_file_html = os.path.join(AGENCY_DIR, path + '.html')
         if os.path.exists(agency_file_html) and os.path.isfile(agency_file_html):
-            resp = make_response(send_from_directory(AGENCY_DIR, path + '.html'))
+            resp = make_response(send_file(agency_file_html))
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
 
-    return jsonify({'error': 'Not found'}), 404
+    # 5. Fallback basename in AGENCY_DIR
+    bname = os.path.basename(path)
+    bfile = os.path.join(AGENCY_DIR, bname)
+    if os.path.exists(bfile) and os.path.isfile(bfile):
+        resp = make_response(send_file(bfile))
+        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return resp
+
+    if not bname.endswith('.html'):
+        if os.path.exists(bfile + '.html') and os.path.isfile(bfile + '.html'):
+            resp = make_response(send_file(bfile + '.html'))
+            resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            return resp
+
+    return jsonify({'error': f'Route /{path} not found'}), 404
 
 # ----------------------------------------------------------------
 #  START SERVER
