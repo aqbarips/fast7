@@ -569,7 +569,7 @@ def delete_store(store_id):
     return jsonify({'success': True, 'deleted': store_id})
 
 # ----------------------------------------------------------------
-#  STATIC FILES
+#  STATIC FILES & CLEAN URLS (WITHOUT .html)
 # ----------------------------------------------------------------
 @app.route('/')
 def index():
@@ -577,8 +577,48 @@ def index():
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     return resp
 
+@app.route('/stores/<store_id>')
+@app.route('/stores/<store_id>/')
+def serve_store_index(store_id):
+    folder = store_id
+    store_dir = os.path.join('stores', folder)
+    if not os.path.exists(store_dir):
+        if os.path.exists('stores'):
+            for sf in os.listdir('stores'):
+                cfg_p = os.path.join('stores', sf, 'store.config.json')
+                if os.path.exists(cfg_p):
+                    cfg = load_json(cfg_p, {})
+                    if str(cfg.get('id')) == str(store_id):
+                        folder = sf; break
+    store_index = os.path.join('stores', folder, 'index.html')
+    if os.path.exists(store_index):
+        resp = make_response(send_from_directory(os.path.join('stores', folder), 'index.html'))
+        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return resp
+    return jsonify({'error': 'Store not found'}), 404
+
+@app.route('/stores/<store_id>/admin')
+def serve_store_admin(store_id):
+    folder = store_id
+    store_dir = os.path.join('stores', folder)
+    if not os.path.exists(store_dir):
+        if os.path.exists('stores'):
+            for sf in os.listdir('stores'):
+                cfg_p = os.path.join('stores', sf, 'store.config.json')
+                if os.path.exists(cfg_p):
+                    cfg = load_json(cfg_p, {})
+                    if str(cfg.get('id')) == str(store_id):
+                        folder = sf; break
+    store_admin = os.path.join('stores', folder, 'admin.html')
+    if os.path.exists(store_admin):
+        resp = make_response(send_from_directory(os.path.join('stores', folder), 'admin.html'))
+        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return resp
+    return jsonify({'error': 'Store admin not found'}), 404
+
 @app.route('/<path:path>')
 def static_files(path):
+    # 1. Exact path check
     if os.path.exists(path) and os.path.isfile(path):
         ext = os.path.splitext(path)[1].lower()
         if ext in ['.js', '.html']:
@@ -587,7 +627,15 @@ def static_files(path):
             return resp
         return send_from_directory('.', path)
 
-    # Agency directory fallback for root relative paths (e.g. /login.html -> agency/login.html)
+    # 2. Check root clean URL (without .html)
+    if not path.endswith('.html'):
+        path_html = path + '.html'
+        if os.path.exists(path_html) and os.path.isfile(path_html):
+            resp = make_response(send_from_directory('.', path_html))
+            resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            return resp
+
+    # 3. Agency directory fallback (exact path)
     agency_path = os.path.join('agency', path)
     if os.path.exists(agency_path) and os.path.isfile(agency_path):
         ext = os.path.splitext(agency_path)[1].lower()
@@ -596,6 +644,14 @@ def static_files(path):
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
         return send_from_directory('agency', path)
+
+    # 4. Agency directory clean URL (without .html)
+    if not path.endswith('.html'):
+        agency_path_html = os.path.join('agency', path + '.html')
+        if os.path.exists(agency_path_html) and os.path.isfile(agency_path_html):
+            resp = make_response(send_from_directory('agency', path + '.html'))
+            resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            return resp
 
     return jsonify({'error': 'Not found'}), 404
 
