@@ -586,6 +586,17 @@ def static_files(path):
             resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return resp
         return send_from_directory('.', path)
+
+    # Agency directory fallback for root relative paths (e.g. /login.html -> agency/login.html)
+    agency_path = os.path.join('agency', path)
+    if os.path.exists(agency_path) and os.path.isfile(agency_path):
+        ext = os.path.splitext(agency_path)[1].lower()
+        if ext in ['.js', '.html']:
+            resp = make_response(send_from_directory('agency', path))
+            resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            return resp
+        return send_from_directory('agency', path)
+
     return jsonify({'error': 'Not found'}), 404
 
 # ----------------------------------------------------------------
