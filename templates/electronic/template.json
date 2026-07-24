@@ -1,0 +1,8 @@
+{
+  "id": "electronic",
+  "name": "إلكترونيات",
+  "description": "قالب متخصص للمنتجات الإلكترونية والتقنية",
+  "icon": "fa-solid fa-laptop",
+  "color": "#059669",
+  "order": 1
+}

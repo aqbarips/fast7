@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل دخول المنصة | FAST7 SaaS Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900;1000&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="animations.css">
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc">
+
+  <div class="animate-fade-up modal-content" style="max-width:440px;background:#ffffff;border:1.5px solid var(--fast7-border);box-shadow:var(--shadow-lg);text-align:center">
+    <div class="logo-icon" style="width:70px;height:70px;border-radius:20px;margin:0 auto 20px;font-size:2rem;background:linear-gradient(135deg,var(--fast7-blue),var(--fast7-purple));color:#fff">
+      <i class="fa-solid fa-bolt-lightning"></i>
+    </div>
+    <h2 style="font-size:1.8rem;font-weight:1000;color:var(--text-dark);margin-bottom:8px">منصة FAST<strong style="color:var(--fast7-blue)">7</strong> 👑</h2>
+    <p style="font-size:0.9rem;color:var(--text-gray);margin-bottom:28px">تسجيل دخول أصحاب الشركة لإدارة المتاجر والعوائد وتخصيص الموقع</p>
+
+    <form onsubmit="handleLoginSubmit(event)" style="text-align:right">
+      <div class="form-group">
+        <label>كلمة مرور منصة الشركة (AGENCY PASS)</label>
+        <input type="password" id="passInput" class="form-input" placeholder="ادخل كلمة المرور (مثال: AGENCY2026)" required autofocus>
+      </div>
+      <div id="errorText" style="display:none;color:#ef4444;font-size:0.8rem;margin-bottom:14px;font-weight:700">⚠️ كلمة المرور غير صحيحة! جرب AGENCY2026 أو 123456</div>
+      <button type="submit" class="btn-fast7 btn-fast7-cyan animate-neon" style="width:100%;justify-content:center;padding:14px;font-size:1rem">
+        <i class="fa-solid fa-right-to-bracket"></i> دخول لوحة أدمن FAST7
+      </button>
+    </form>
+
+    <div style="margin-top:24px;border-top:1px solid var(--fast7-border);padding-top:16px">
+      <a href="index.html" style="font-size:0.88rem;color:var(--fast7-blue);text-decoration:none;font-weight:800">← العودة للموقع العام لمنصة FAST7</a>
+    </div>
+  </div>
+
+  <script>
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const p = document.getElementById('passInput').value.trim();
+      try {
+        const resp = await fetch('http://localhost:8080/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: p })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          localStorage.setItem('mycart_agency_logged', 'true');
+          localStorage.setItem('mycart_auth_token', data.token);
+          window.location.href = 'dashboard.html';
+        } else {
+          document.getElementById('errorText').style.display = 'block';
+        }
+      } catch(e) {
+        // Fallback: server not running
+        if (p === 'AGENCY2026' || p === '123456' || p === 'admin' || p === 'ADMIN123') {
+          localStorage.setItem('mycart_agency_logged', 'true');
+          window.location.href = 'dashboard.html';
+        } else {
+          document.getElementById('errorText').style.display = 'block';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

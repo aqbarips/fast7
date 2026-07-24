@@ -1,0 +1,54 @@
+/* =========================================================
+   FAST7 LIGHT THEME — ANIMATIONS & EFFECTS
+   ========================================================= */
+
+@keyframes pulseGlowLight {
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  70% { box-shadow: 0 0 0 14px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+@keyframes floatHero {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes shimmerSweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-neon {
+  animation: pulseGlowLight 2.8s infinite;
+}
+
+.animate-float-fast7 {
+  animation: floatHero 5s infinite ease-in-out;
+}
+
+.fast7-shimmer-badge {
+  background: linear-gradient(90deg, rgba(37,99,235,0.06) 0%, rgba(124,58,237,0.14) 50%, rgba(37,99,235,0.06) 100%);
+  background-size: 200% 100%;
+  animation: shimmerSweep 3.5s infinite linear;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.fast7-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fast7-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+  border-color: #2563eb !important;
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

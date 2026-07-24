@@ -1,0 +1,234 @@
+[
+  {
+    "id": 1784920113579,
+    "name": "PLAYSTION",
+    "price": 5000,
+    "oldPrice": 8000,
+    "categories": [
+      "جوالات"
+    ],
+    "images": [
+      "https://vbamdvvgtvlfpbhoyzsr.supabase.co/storage/v1/object/public/store-media/default/1784920106078_17671232236297.webp"
+    ],
+    "brand": "",
+    "featured": false,
+    "badge": "",
+    "features": [],
+    "specs": [],
+    "createdAt": "٢٤‏/٧‏/٢٠٢٦"
+  },
+  {
+    "category": "جوالات",
+    "discount": 9,
+    "features": [
+      "شاشة 6.9 بوصة",
+      "معالج A18 Pro",
+      "كاميرا 48MP",
+      "بطارية 4685mAh"
+    ],
+    "id": 1,
+    "image": "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop",
+    "name": "آيفون 16 برو ماكس",
+    "oldPrice": 5499,
+    "price": 4999,
+    "specs": [
+      [
+        "المعالج",
+        "A18 Pro"
+      ],
+      [
+        "الرام",
+        "8GB"
+      ],
+      [
+        "التخزين",
+        "256GB"
+      ],
+      [
+        "الشاشة",
+        "6.9 بوصة OLED"
+      ],
+      [
+        "الكاميرا",
+        "48+12+12MP"
+      ],
+      [
+        "البطارية",
+        "4685mAh"
+      ]
+    ]
+  },
+  {
+    "category": "جوالات",
+    "discount": 10,
+    "features": [
+      "شاشة 6.9 بوصة",
+      "معالج Snapdragon 8 Gen 4",
+      "كاميرا 200MP",
+      "قلم S Pen"
+    ],
+    "id": 2,
+    "image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop",
+    "name": "سامسونج S25 ألترا",
+    "oldPrice": 4899,
+    "price": 4399,
+    "specs": [
+      [
+        "المعالج",
+        "Snapdragon 8 Gen 4"
+      ],
+      [
+        "الرام",
+        "12GB"
+      ],
+      [
+        "التخزين",
+        "256GB"
+      ],
+      [
+        "الشاشة",
+        "6.9 بوصة Dynamic AMOLED"
+      ],
+      [
+        "الكاميرا",
+        "200+50+12+10MP"
+      ],
+      [
+        "البطارية",
+        "5000mAh"
+      ]
+    ]
+  },
+  {
+    "id": 3,
+    "name": "ماك بوك برو M4",
+    "price": 7499,
+    "oldPrice": 8499,
+    "categories": [
+      "لابتوب"
+    ],
+    "images": [
+      "https://tse3.mm.bing.net/th/id/OIP.WmWQw1g3vs7yuDm2lnoPrwHaE7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
+    ],
+    "brand": "",
+    "featured": false,
+    "badge": "",
+    "features": [
+      "شاشة 16 بوصة",
+      "معالج M4 Max",
+      "رام 36GB",
+      "بطارية 22 ساعة"
+    ],
+    "specs": [
+      [
+        "المعالج",
+        "Apple M4 Max"
+      ],
+      [
+        "الرام",
+        "36GB"
+      ],
+      [
+        "التخزين",
+        "1TB SSD"
+      ],
+      [
+        "الشاشة",
+        "16.2 بوصة Liquid Retina XDR"
+      ],
+      [
+        "الكاميرا",
+        "12MP FaceTime HD"
+      ],
+      [
+        "البطارية",
+        "22 ساعة"
+      ]
+    ],
+    "createdAt": "٢٤‏/٧‏/٢٠٢٦"
+  },
+  {
+    "id": 4,
+    "name": "سماعات AirPods Pro 2",
+    "price": 899,
+    "oldPrice": 1099,
+    "categories": [
+      "إكسسوارات"
+    ],
+    "images": [
+      "https://files.easy-orders.net/1746962459413182673.jpg"
+    ],
+    "brand": "",
+    "featured": false,
+    "badge": "",
+    "features": [
+      "إلغاء ضوضاء نشط",
+      "مقاومة الماء",
+      "شحن لاسلكي",
+      "بطارية 6 ساعات"
+    ],
+    "specs": [
+      [
+        "النوع",
+        "In-Ear"
+      ],
+      [
+        "الاتصال",
+        "Bluetooth 5.3"
+      ],
+      [
+        "المقاومة",
+        "IPX4"
+      ],
+      [
+        "الوزن",
+        "5.3g"
+      ]
+    ],
+    "createdAt": "٢٤‏/٧‏/٢٠٢٦"
+  },
+  {
+    "id": 5,
+    "name": "سوني PlayStation 5 Pro",
+    "price": 2499,
+    "oldPrice": 2999,
+    "categories": [
+      "ألعاب"
+    ],
+    "images": [
+      "https://kolshzin.com/wp-content/uploads/2025/06/Playstation-5-Pro.webp"
+    ],
+    "brand": "",
+    "featured": false,
+    "badge": "",
+    "features": [
+      "معالج مخصص 8 نوى",
+      "GPU أقوى 45%",
+      "SSD 2TB",
+      "دعم 8K"
+    ],
+    "specs": [
+      [
+        "المعالج",
+        "x86-64-AMD Ryzen Zen 2"
+      ],
+      [
+        "الرام",
+        "16GB GDDR6"
+      ],
+      [
+        "التخزين",
+        "2TB SSD"
+      ],
+      [
+        "الألعاب",
+        "متوافق مع PS5/PS4"
+      ],
+      [
+        "الأبعاد",
+        "390x260x104mm"
+      ]
+    ],
+    "createdAt": "٢٤‏/٧‏/٢٠٢٦"
+  }
+]

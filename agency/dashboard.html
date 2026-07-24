@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة FAST7 | لوحة الشركاء وإدارة المتاجر والعوائد</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900;1000&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="animations.css">
+  <style>
+    /* ── Dashboard-only overrides ── */
+    html, body { height: 100%; overflow: hidden; }
+
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: calc(100vh - 75px);
+
+      overflow: hidden;
+    }
+    @media (max-width: 900px) {
+      .dashboard-layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
+    }
+    .sidebar {
+      background: #ffffff;
+      border-left: 1.5px solid var(--fast7-border);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      box-sizing: border-box;
+    }
+    .sidebar-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      color: var(--text-gray);
+      font-weight: 800;
+      font-size: 0.94rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: right;
+      transition: all 0.2s ease;
+    }
+    .sidebar-btn:hover, .sidebar-btn.active {
+      background: #eff6ff;
+      color: var(--fast7-blue);
+    }
+    .sidebar-btn i { font-size: 1.1rem; }
+    
+    .dash-tab-content { display: none; }
+    .dash-tab-content.active { display: block !important; animation: fadeUp 0.3s ease forwards; }
+
+    .main-view-content {
+      padding: 32px;
+      background: #f8fafc;
+      height: 100%;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body style="background:#f8fafc">
+
+  <!-- FAST7 Header Top Bar -->
+  <header class="fast7-navbar" style="background:#ffffff">
+    <a href="index.html" class="fast7-brand">
+      <div class="logo-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
+      <span>FAST<strong style="color:var(--fast7-blue)">7</strong> <small style="font-size:0.75rem;color:var(--fast7-gold);font-weight:900">SaaS Control Center</small></span>
+    </a>
+    <div class="fast7-nav-btns">
+      <button onclick="agencyCreateStoreDirect()" class="btn-fast7 btn-fast7-cyan animate-neon"><i class="fa-solid fa-plus-circle"></i> إنشاء متجر مباشر 🚀</button>
+      <a href="index.html" target="_blank" class="btn-fast7 btn-fast7-glass"><i class="fa-solid fa-globe"></i> موقع FAST7 العام</a>
+    </div>
+  </header>
+
+  <!-- Sidebar Layout -->
+  <div class="dashboard-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <button class="sidebar-btn active" onclick="switchDashTab('tab-overview', this)">
+        <i class="fa-solid fa-chart-pie"></i> نظرة عامة والتحليلات
+      </button>
+      
+      <button class="sidebar-btn" onclick="switchDashTab('tab-pending', this)">
+        <i class="fa-solid fa-inbox"></i> طلبات الانضمام <span id="pendingBadgeCount" style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:999px;font-size:0.75rem;margin-right:auto;display:none">0</span>
+      </button>
+
+      <button class="sidebar-btn" onclick="switchDashTab('tab-stores', this)">
+        <i class="fa-solid fa-store"></i> إدارة كافّة المتاجر
+      </button>
+
+      <button class="sidebar-btn" onclick="switchDashTab('tab-revenue', this)">
+        <i class="fa-solid fa-sack-dollar"></i> رصيد المتاجر والسجل المالي
+      </button>
+
+      <button class="sidebar-btn" onclick="switchDashTab('tab-customizer', this)">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> مخصص موقع المنصة
+      </button>
+
+      <button class="sidebar-btn" onclick="switchDashTab('tab-settings', this)">
+        <i class="fa-solid fa-gear"></i> إعدادات المنصة والأمان
+      </button>
+
+      <button class="sidebar-btn" onclick="switchDashTab('tab-notifications', this)">
+        <i class="fa-solid fa-bullhorn"></i> سِجِل الإشعارات 📢
+      </button>
+
+      <button class="sidebar-btn" onclick="switchDashTab('tab-create-notification', this)">
+        <i class="fa-solid fa-plus-circle" style="color:var(--fast7-blue)"></i> إنشاء إشعار جديد ⚡
+      </button>
+
+      <!-- Logout pinned at bottom -->
+      <div style="margin-top:auto;padding-top:16px;border-top:1.5px solid var(--fast7-border)">
+        <button onclick="agencyLogout()" class="sidebar-btn" style="color:#ef4444;font-weight:900">
+          <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Dynamic Content Views -->
+    <main class="main-view-content">
+      
+      <!-- TAB 1: OVERVIEW ANALYTICS -->
+      <div class="dash-tab-content active" id="tab-overview">
+        <div style="margin-bottom:28px">
+          <h2 style="font-size:1.8rem;font-weight:1000;color:var(--text-dark)">نظرة عامة والتحليلات المباشرة 📊</h2>
+          <p style="font-size:0.95rem;color:var(--text-gray)">ملخص الإحصائيات الحية لمجموع المتاجر المنشأة، الأرصدة التراكمية، والعوائد</p>
+        </div>
+
+        <div class="grid-cards" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-bottom:32px">
+          <div class="fast7-card fast7-card-hover" style="background:#ffffff">
+            <div style="font-size:0.85rem;color:var(--text-gray);font-weight:800;margin-bottom:4px">إجمالي المتاجر المنشأة</div>
+            <div style="font-size:2.4rem;font-weight:1000;color:var(--text-dark)" id="totalStoresCount">1</div>
+          </div>
+          <div class="fast7-card fast7-card-hover" style="background:#ffffff">
+            <div style="font-size:0.85rem;color:var(--text-gray);font-weight:800;margin-bottom:4px">إجمالي عوائد الاشتراكات</div>
+            <div style="font-size:2.4rem;font-weight:1000;color:var(--fast7-emerald)" id="totalAgencyRevenue">0 ₪</div>
+          </div>
+          <div class="fast7-card fast7-card-hover" style="background:#ffffff">
+            <div style="font-size:0.85rem;color:var(--text-gray);font-weight:800;margin-bottom:4px">عوائد رسوم 2₪ / طلب المكتملة</div>
+            <div style="font-size:2.4rem;font-weight:1000;color:var(--fast7-gold)" id="totalOrderFees">0 ₪</div>
+          </div>
+          <div class="fast7-card fast7-card-hover" style="background:#ffffff">
+            <div style="font-size:0.85rem;color:var(--text-gray);font-weight:800;margin-bottom:4px">إجمالي أرصدة المحفظة المودعة</div>
+            <div style="font-size:2.4rem;font-weight:1000;color:var(--fast7-blue)" id="totalStoresDeposited">0 ₪</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: PENDING STORE REQUESTS -->
+      <div class="dash-tab-content" id="tab-pending">
+        <div style="margin-bottom:28px">
+          <h2 style="font-size:1.8rem;font-weight:1000;color:var(--text-dark)">طلبات المتاجر بانتظار الموافقة 📥</h2>
+          <p style="font-size:0.95rem;color:var(--text-gray)">مراجعة وتفعيل الطلبات القادمة من نموذج التسجيل بالشركة</p>
+        </div>
+
+        <div class="saas-table-box" style="background:#ffffff">
+          <table class="saas-table">
+            <thead>
+              <tr>
+                <th>المتجر والنطاق</th>
+                <th>صاحب المتجر</th>
+                <th>الواتساب / الهاتف</th>
+                <th>النشاط التجاري</th>
+                <th>الخطة المختارة</th>
+                <th>التاريخ</th>
+                <th>الإجراءات والتفعيل</th>
+              </tr>
+            </thead>
+            <tbody id="pendingRequestsList">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: STORES MANAGER (WITH PREVIEW, EDIT & BALANCE ACTIONS) -->
+      <div class="dash-tab-content" id="tab-stores">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px">
+          <div>
+            <h2 style="font-size:1.8rem;font-weight:1000;color:var(--text-dark)">إدارة كافّة المتاجر وتحديث الأرصدة 🏬</h2>
+            <p style="font-size:0.95rem;color:var(--text-gray)">معاينة المتجر المباشر، تعديل البيانات، شحن الرصيد، والترقية</p>
+          </div>
+          <button onclick="agencyCreateStoreDirect()" class="btn-fast7 btn-fast7-cyan">
+            <i class="fa-solid fa-plus"></i> إنشاء متجر جديد مباشر
+          </button>
+        </div>
+
+        <div class="saas-table-box" style="background:#ffffff">
+          <table class="saas-table">
+            <thead>
+              <tr>
+                <th>اسم المتجر والنطاق</th>
+                <th>الخطة الحالية</th>
+                <th>رسوم الطلب</th>
+                <th>الطلبات الناتج</th>
+                <th>رصيد المحفظة المتبقي 💳</th>
+                <th>الحالة</th>
+                <th>إدارة الرصيد والمعاينة والتعديل</th>
+              </tr>
+            </thead>
+            <tbody id="saasStoresList">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: REVENUE & STORE BALANCE LEDGER -->
+      <div class="dash-tab-content" id="tab-revenue">
+        <div style="margin-bottom:28px">
+          <h2 style="font-size:1.8rem;font-weight:1000;color:var(--text-dark)">سجل أرصدة المتاجر والعمليات المالية 💰</h2>
+          <p style="font-size:0.95rem;color:var(--text-gray)">حساب الرصيد المتبقي = المبالغ المودعة - إجمالي العمولات والاشتراكات المستحقة</p>
+        </div>
+
+        <div class="saas-table-box" style="background:#ffffff">
+          <table class="saas-table">
+            <thead>
+              <tr>
+                <th>المتجر</th>
+                <th>إجمالي المبالغ المودعة</th>
+                <th>العمولات المستحقة (2₪/طلب)</th>
+                <th>الرصيد الحالي المتبقي للمتجر</th>
+                <th>شحن رصيد جديد</th>
+              </tr>
+            </thead>
+            <tbody id="revenueLedgerList">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 5: WEBSITE CUSTOMIZER -->
+      <div class="dash-tab-content" id="tab-customizer">
+        <div style="margin-bottom:28px">
+          <h2 style="font-size:1.8rem;font-weight:1000;color:var(--text-dark)">تخصيص موقع المنصة (Landing Page Customizer) 🎨</h2>
+          <p style="font-size:0.95rem;color:var(--text-gray)">تعديل نصوص العناوين الرئيسية، الأسعار، وعروض الموقع العام</p>
+        </div>
+
+        <div class="saas-table-box" style="background:#ffffff">
+          <form onsubmit="event.preventDefault(); saveCustomizerSettings();">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+              <div class="form-group">
+                <label>اسم المنصة / الشركة (Brand Name)</label>
+                <input type="text" id="custBrandName" class="form-input" placeholder="FAST7 Platform">
+              </div>
+
+              <div class="form-group">
+                <label>شارة الترحيب (Hero Tag Badge)</label>
+                <input type="text" id="custHeroTag" class="form-input" placeholder="FAST7 Commerce — منصة متكاملة ⚡">
+              </div>
+
+              <div class="form-group" style="grid-column:1/-1">
+                <label>العنوان الرئيسي الترحيبي (Hero Headline)</label>
+                <input type="text" id="custHeroTitle" class="form-input" placeholder="أدر متجرك الإلكتروني باحتراف مع FAST7">
+              </div>
+
+              <div class="form-group" style="grid-column:1/-1">
+                <label>الوصف الفرعي بالرئيسية (Hero Subtitle)</label>
+                <textarea id="custHeroSubtitle" class="form-input" style="height:85px;resize:vertical"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>رسم الطلب بالخطة المجانية (شيكل)</label>
+                <input type="number" id="custFreeFee" class="form-input" placeholder="2">
+              </div>
+
+              <div class="form-group">
+                <label>حد الرسوم المسموح قبل المهلة (شيكل)</label>
+                <input type="number" id="custFeeLimit" class="form-input" placeholder="100">
+              </div>
+
+              <div class="form-group">
+                <label>سعر الخطة الشهرية (شيكل)</label>
+                <input type="number" id="custMonthlyFee" class="form-input" placeholder="100">
+              </div>
+
+              <div class="form-group">
+                <label>سعر الخطة السنوية (شيكل)</label>
+                <input type="number" id="custAnnualFee" class="form-input" placeholder="1000">
+              </div>
+            </div>
+
+            <button type="submit" class="btn-fast7 btn-fast7-cyan animate-neon" style="margin-top:22px;padding:14px 36px;font-size:1rem">
+              <i class="fa-solid fa-floppy-disk"></i> حفظ كافّة التغييرات والتحديث الفوري
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB 6: SETTINGS -->
+      <div class="dash-tab-content" id="tab-settings">
+        <div style="margin-bottom:28px">
+          <h2 style="font-size:1.8rem;font-weight:1000;color:var(--text-dark)">إعدادات المنصة والأمان ⚙️</h2>
+          <p style="font-size:0.95rem;color:var(--text-gray)">تحديث كلمة مرور أصحاب المنصة وتحديد إعدادات النواحي الأمنية</p>
+        </div>
+
+        <div class="saas-table-box" style="background:#ffffff;max-width:540px">
+          <form onsubmit="event.preventDefault(); updateAgencyPass();">
+            <div class="form-group">
+              <label>كلمة المرور الحالية</label>
+              <input type="password" id="currPassInput" class="form-input" placeholder="••••••••" required>
+            </div>
+
+            <div class="form-group">
+              <label>كلمة المرور الجديدة</label>
+              <input type="password" id="newPassInput" class="form-input" placeholder="••••••••" required minlength="6">
+            </div>
+
+            <button type="submit" class="btn-fast7 btn-fast7-cyan" style="padding:12px 30px;margin-top:10px">
+              <i class="fa-solid fa-key"></i> تحديث كلمة المرور
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB 7: NOTIFICATIONS -->
+      <div class="dash-tab-content" id="tab-notifications">
+        <div style="margin-bottom:28px">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px">
+            <div>
+              <h2 style="font-size:1.8rem;font-weight:1000;color:var(--text-dark);margin:0;display:flex;align-items:center;gap:10px">
+                <span class="icon-badge" style="background:linear-gradient(135deg,var(--fast7-blue),var(--fast7-cyan));color:#fff;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem"><i class="fa-solid fa-bullhorn"></i></span>
+                إرسال الإشعارات للمتاجر
+              </h2>
+              <p style="font-size:0.95rem;color:var(--text-gray);margin:6px 0 0 54px">إرسال تنبيهات وإعلانات مستهدفة للمتاجر — كل المتاجر أو متجر محدد، مع جدولة وإعدادات متقدمة</p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button onclick="openNotifTemplates()" class="btn-fast7 btn-fast7-glass" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px"><i class="fa-solid fa-file-lines"></i> <span>قوالب جاهزة</span></button>
+              <button onclick="openScheduledNotifs()" class="btn-fast7" style="background:var(--fast7-gold);color:#1f2937;display:inline-flex;align-items:center;gap:8px;padding:10px 18px"><i class="fa-solid fa-clock"></i> <span>مجدولة</span></button>
+              <button onclick="switchDashTab('tab-create-notification')" class="btn-fast7 btn-fast7-cyan animate-neon" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;font-weight:800"><i class="fa-solid fa-plus"></i> <span>إنشاء إشعار جديد</span></button>
+            </div>
+          </div>
+
+          <!-- Stats Cards -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px" id="notifStatsCards">
+            <div class="fast7-card fast7-card-hover" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#bfdbfe">
+              <div style="font-size:.75rem;color:#1e40af;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">إجمالي المرسل</div>
+              <div style="font-size:1.8rem;font-weight:1000;color:#1e40af" id="statTotalSent">0</div>
+            </div>
+            <div class="fast7-card fast7-card-hover" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#bbf7d0">
+              <div style="font-size:.75rem;color:#166534;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">معدل القراءة</div>
+              <div style="font-size:1.8rem;font-weight:1000;color:#166534" id="statReadRate">0%</div>
+            </div>
+            <div class="fast7-card fast7-card-hover" style="background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:#fcd34d">
+              <div style="font-size:.75rem;color:#92400e;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">مجدولة</div>
+              <div style="font-size:1.8rem;font-weight:1000;color:#92400e" id="statScheduled">0</div>
+            </div>
+            <div class="fast7-card fast7-card-hover" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);border-color:#f9a8d4">
+              <div style="font-size:.75rem;color:#be185d;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">فاشلة</div>
+              <div style="font-size:1.8rem;font-weight:1000;color:#be185d" id="statFailed">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sent Notifications List with Tabs -->
+        <div class="fast7-card" style="background:#fff">
+          <!-- Filter Tabs -->
+          <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;border-bottom:1px solid var(--fast7-border);padding-bottom:16px">
+            <button class="notif-filter-tab active" data-filter="all" style="padding:10px 18px;border-radius:999px;border:1px solid var(--fast7-border);background:#fff;font-weight:800;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--text-gray);transition:all .2s"><i class="fa-solid fa-list"></i> <span>الكل</span> <span class="filter-count" id="fc-all" style="background:var(--fast7-border);color:var(--text-gray);padding:2px 8px;border-radius:999px;font-size:.65rem;font-weight:800">0</span></button>
+            <button class="notif-filter-tab" data-filter="sent" style="padding:10px 18px;border-radius:999px;border:1px solid var(--fast7-border);background:#fff;font-weight:800;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--text-gray);transition:all .2s"><i class="fa-solid fa-paper-plane" style="color:var(--fast7-blue)"></i> <span>مرسلة</span> <span class="filter-count" id="fc-sent" style="background:var(--fast7-border);color:var(--text-gray);padding:2px 8px;border-radius:999px;font-size:.65rem;font-weight:800">0</span></button>
+            <button class="notif-filter-tab" data-filter="scheduled" style="padding:10px 18px;border-radius:999px;border:1px solid var(--fast7-border);background:#fff;font-weight:800;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--text-gray);transition:all .2s"><i class="fa-solid fa-clock" style="color:var(--fast7-gold)"></i> <span>مجدولة</span> <span class="filter-count" id="fc-scheduled" style="background:var(--fast7-border);color:var(--text-gray);padding:2px 8px;border-radius:999px;font-size:.65rem;font-weight:800">0</span></button>
+            <button class="notif-filter-tab" data-filter="draft" style="padding:10px 18px;border-radius:999px;border:1px solid var(--fast7-border);background:#fff;font-weight:800;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--text-gray);transition:all .2s"><i class="fa-solid fa-floppy-disk" style="color:var(--text-gray)"></i> <span>مسودات</span> <span class="filter-count" id="fc-draft" style="background:var(--fast7-border);color:var(--text-gray);padding:2px 8px;border-radius:999px;font-size:.65rem;font-weight:800">0</span></button>
+            <button class="notif-filter-tab" data-filter="failed" style="padding:10px 18px;border-radius:999px;border:1px solid var(--fast7-border);background:#fff;font-weight:800;font-size:.8rem;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--text-gray);transition:all .2s"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444"></i> <span>فاشلة</span> <span class="filter-count" id="fc-failed" style="background:var(--fast7-border);color:var(--text-gray);padding:2px 8px;border-radius:999px;font-size:.65rem;font-weight:800">0</span></button>
+          </div>
+
+          <!-- Search & Bulk Actions -->
+          <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+            <div style="position:relative;flex:1;min-width:250px">
+              <i class="fa-solid fa-magnifying-glass" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-gray);font-size:.9rem"></i>
+              <input type="text" id="notifSearch" class="form-input" placeholder="بحث في الإشعارات... (عنوان، رسالة، متجر)" style="padding-right:44px;padding:10px 14px;font-size:.85rem">
+            </div>
+            <div style="display:flex;gap:8px" id="bulkActions" style="display:none">
+              <button class="btn-fast7 btn-fast7-ghost" style="padding:8px 14px;font-size:.75rem" onclick="bulkResend()"><i class="fa-solid fa-rotate-right"></i> إعادة إرسال</button>
+              <button class="btn-fast7 btn-fast7-ghost" style="padding:8px 14px;font-size:.75rem;color:#ef4444;border-color:#fecaca" onclick="bulkDelete()"><i class="fa-solid fa-trash"></i> حذف</button>
+            </div>
+          </div>
+
+          <!-- Notifications List -->
+          <div id="sentNotifList" style="max-height:600px;overflow-y:auto">
+            <!-- JS Populated -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="notifEmptyState" style="display:none;text-align:center;padding:60px 20px;color:var(--text-gray)">
+            <div style="font-size:4rem;margin-bottom:16px;opacity:.5"><i class="fa-solid fa-bell-slash"></i></div>
+            <h3 style="font-size:1.2rem;font-weight:800;color:var(--text-dark);margin:0 0 8px">لا توجد إشعارات بعد</h3>
+            <p style="font-size:.9rem;margin:0 0 20px">أنشئ أول إشعار لإبلاغ المتاجر بالتحديثات والعروض</p>
+            <button onclick="switchDashTab('tab-create-notification')" class="btn-fast7 btn-fast7-cyan" style="padding:12px 28px;font-weight:800"><i class="fa-solid fa-plus"></i> إنشاء أول إشعار</button>
+          </div>
+
+          <!-- Pagination -->
+          <div id="notifPagination" style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--fast7-border);display:none">
+            <button class="btn-fast7 btn-fast7-ghost" id="notifPrevPage" style="padding:8px 12px;font-size:.8rem" disabled><i class="fa-solid fa-chevron-right"></i> السابق</button>
+            <span id="notifPageInfo" style="font-weight:700;font-size:.85rem;color:var(--text-gray)"></span>
+            <button class="btn-fast7 btn-fast7-ghost" id="notifNextPage" style="padding:8px 12px;font-size:.8rem" disabled>التالي <i class="fa-solid fa-chevron-left"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 8: STANDALONE CREATE NOTIFICATION PAGE -->
+      <div class="dash-tab-content" id="tab-create-notification">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+          <div>
+            <h2 style="font-size:1.8rem;font-weight:1000;color:var(--text-dark);margin:0;display:flex;align-items:center;gap:10px">
+              <span class="icon-badge" style="background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem"><i class="fa-solid fa-plus-circle"></i></span>
+              إنشاء إشعار جديد
+            </h2>
+            <p style="font-size:0.92rem;color:var(--text-gray);margin:4px 0 0 54px">صمّم وخصّص إشعاراً جديداً لإرساله للمتاجر أو جدولة موعد بثه</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button onclick="openNotifTemplates()" class="btn-fast7 btn-fast7-glass" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px"><i class="fa-solid fa-file-lines"></i> <span>قوالب جاهزة</span></button>
+            <button onclick="switchDashTab('tab-notifications')" class="btn-fast7 btn-fast7-ghost" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px"><i class="fa-solid fa-arrow-right"></i> <span>سِجِل الإشعارات</span></button>
+          </div>
+        </div>
+
+        <!-- Two Columns Layout: Form on Right (60%) & Live Preview on Left (40%) -->
+        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+          
+          <!-- RIGHT: FORM -->
+          <div id="notifFormBox" class="fast7-card" style="flex:1;min-width:320px;background:#fff;border:1px solid #e2e8f0;box-shadow:0 10px 25px -5px rgba(0,0,0,.05);padding:24px">
+            <form onsubmit="event.preventDefault(); agencySendNotif();" id="notifForm" style="display:flex;flex-direction:column;gap:18px">
+              <!-- Row 1: Target & Type -->
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+                <div class="form-group">
+                  <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-users" style="color:var(--fast7-blue)"></i> المستلمون</label>
+                  <select id="notifTarget" class="form-input" style="padding:12px 14px;font-size:.9rem" onchange="updateTargetStoreList();updateLiveCreatePreview()">
+                    <option value="all">🌐 جميع المتاجر النشطة</option>
+                    <option value="specific">🏪 متجر محدد</option>
+                    <option value="plan">📋 حسب الخطة</option>
+                    <option value="balance">💳 حسب الرصيد (منخفض/صفر)</option>
+                    <option value="inactive">⏸️ متاجر غير نشطة</option>
+                    <option value="new">🆕 متاجر جديدة (آخر 7 أيام)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-tag" style="color:var(--fast7-gold)"></i> نوع الإشعار</label>
+                  <select id="notifType" class="form-input" style="padding:12px 14px;font-size:.9rem" onchange="toggleNotifTypeFields();updateLiveCreatePreview()">
+                    <option value="general" data-icon="📢" data-color="#2563eb">📢 إعلان عام</option>
+                    <option value="payment" data-icon="💰" data-color="#dc2626">💰 تذكير دفع / رصيد منخفض</option>
+                    <option value="post" data-icon="📝" data-color="#7c3aed">📝 مقال / منشور / نشرة</option>
+                    <option value="update" data-icon="🔄" data-color="#0891b2">🔄 تحديث منصة / صيانة</option>
+                    <option value="offer" data-icon="🏷️" data-color="#db2777">🏷️ عرض خاص / خصم</option>
+                    <option value="marketing" data-icon="📣" data-color="#ea580c">📣 حملة تسويقية</option>
+                    <option value="welcome" data-icon="👋" data-color="#059669">👋 ترحيب / أونبوردينغ</option>
+                    <option value="warning" data-icon="⚠️" data-color="#dc2626">⚠️ تحذير / إجراء مطلوب</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Specific Store Selector -->
+              <div id="specificStoreGroup" class="form-group" style="display:none">
+                <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-store" style="color:var(--fast7-emerald)"></i> اختر المتجر</label>
+                <select id="notifSpecificStore" class="form-input" style="padding:12px 14px;font-size:.9rem" onchange="updateLiveCreatePreview()"></select>
+              </div>
+
+              <!-- Plan Filter -->
+              <div id="planFilterGroup" class="form-group" style="display:none">
+                <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-list-check" style="color:var(--fast7-blue)"></i> اختر الخطط</label>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+                  <label class="checkbox-card" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border:2px solid var(--fast7-border);border-radius:10px;cursor:pointer;transition:all .2s"><input type="checkbox" value="free" style="width:18px;height:18px;accent-color:var(--fast7-emerald)"><span style="font-weight:700;font-size:.85rem">مجانية</span></label>
+                  <label class="checkbox-card" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border:2px solid var(--fast7-border);border-radius:10px;cursor:pointer;transition:all .2s"><input type="checkbox" value="monthly" style="width:18px;height:18px;accent-color:var(--fast7-blue)"><span style="font-weight:700;font-size:.85rem">شهرية</span></label>
+                  <label class="checkbox-card" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border:2px solid var(--fast7-border);border-radius:10px;cursor:pointer;transition:all .2s"><input type="checkbox" value="annual" style="width:18px;height:18px;accent-color:var(--fast7-gold)"><span style="font-weight:700;font-size:.85rem">سنوية VIP</span></label>
+                </div>
+              </div>
+
+              <!-- Title & Message -->
+              <div class="form-group">
+                <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-heading" style="color:var(--fast7-cyan)"></i> عنوان الإشعار <span style="color:#ef4444;font-size:.75rem">*</span></label>
+                <input type="text" id="notifTitle" class="form-input" placeholder="مثال: تحديث مهم في لوحة التحكم" required style="padding:12px 14px;font-size:.95rem;font-weight:600" maxlength="100" oninput="updateCharacterCounters();updateLiveCreatePreview()">
+                <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:.7rem;color:var(--text-gray)">
+                  <span id="titleCharCount">0</span>/100 حرف
+                  <span id="titlePreview" style="color:var(--fast7-blue);font-weight:700;display:none">✓ طول مناسب</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-comment-dots" style="color:var(--fast7-emerald)"></i> نص الإشعار <span style="color:#ef4444;font-size:.75rem">*</span></label>
+                <textarea id="notifMessage" class="form-input" rows="4" placeholder="اكتب محتوى الإشعار هنا... كن واضحاً ومباشراً" required style="resize:vertical;padding:12px 14px;font-size:.9rem;line-height:1.6;font-family:inherit" maxlength="500" oninput="updateCharacterCounters();updateLiveCreatePreview()"></textarea>
+                <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:.7rem;color:var(--text-gray)">
+                  <span id="msgCharCount">0</span>/500 حرف
+                  <span id="msgPreview" style="color:var(--fast7-emerald);font-weight:700;display:none">✓ طول مناسب</span>
+                </div>
+              </div>
+
+              <!-- Post Body -->
+              <div class="form-group" id="notifPostBodyGroup" style="display:none">
+                <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-file-lines" style="color:#7c3aed"></i> محتوى المقال الكامل (HTML مدعوم)</label>
+                <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+                  <button type="button" class="btn-fast7 btn-fast7-ghost" style="padding:6px 12px;font-size:.75rem" onclick="insertHtmlTag('b');updateLiveCreatePreview()"><i class="fa-solid fa-bold"></i> Bold</button>
+                  <button type="button" class="btn-fast7 btn-fast7-ghost" style="padding:6px 12px;font-size:.75rem" onclick="insertHtmlTag('i');updateLiveCreatePreview()"><i class="fa-solid fa-italic"></i> Italic</button>
+                  <button type="button" class="btn-fast7 btn-fast7-ghost" style="padding:6px 12px;font-size:.75rem" onclick="insertHtmlTag('a');updateLiveCreatePreview()"><i class="fa-solid fa-link"></i> Link</button>
+                  <button type="button" class="btn-fast7 btn-fast7-ghost" style="padding:6px 12px;font-size:.75rem" onclick="insertHtmlTag('ul');updateLiveCreatePreview()"><i class="fa-solid fa-list"></i> List</button>
+                  <button type="button" class="btn-fast7 btn-fast7-ghost" style="padding:6px 12px;font-size:.75rem" onclick="insertHtmlTag('img');updateLiveCreatePreview()"><i class="fa-solid fa-image"></i> Image</button>
+                </div>
+                <textarea id="notifPostBody" class="form-input" rows="7" placeholder="اكتب محتوى المقال كاملاً هنا... يمكنك استخدام HTML بسيط" style="resize:vertical;font-size:.8rem;line-height:1.7;font-family:inherit;padding:12px 14px" oninput="updateLiveCreatePreview()"></textarea>
+              </div>
+
+              <!-- Media & Link Row -->
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+                <div class="form-group">
+                  <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-image" style="color:var(--fast7-gold)"></i> صورة (رابط URL)</label>
+                  <div style="position:relative">
+                    <input type="url" id="notifImage" class="form-input" placeholder="https://example.com/image.jpg" style="padding:12px 14px;padding-right:44px;font-size:.9rem" oninput="previewNotifImage();updateLiveCreatePreview()">
+                    <button type="button" onclick="previewNotifImage();updateLiveCreatePreview()" class="btn-fast7 btn-fast7-ghost" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);padding:6px 10px;font-size:.75rem"><i class="fa-solid fa-eye"></i></button>
+                  </div>
+                  <img id="notifImagePreview" src="" alt="معاينة" style="display:none;max-width:100%;max-height:150px;border-radius:10px;margin-top:8px;border:2px solid var(--fast7-border)">
+                </div>
+                <div class="form-group">
+                  <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-link" style="color:var(--fast7-cyan)"></i> رابط إجراء (اختياري)</label>
+                  <input type="url" id="notifLink" class="form-input" placeholder="https://fast7.com/dashboard/offers" style="padding:12px 14px;font-size:.9rem" oninput="updateLiveCreatePreview()">
+                  <div style="margin-top:6px;font-size:.7rem;color:var(--text-gray)">سيظهر كزر "عرض المزيد" في الإشعار</div>
+                </div>
+              </div>
+
+              <!-- Advanced Options Accordion -->
+              <details class="form-group" style="border:1px solid var(--fast7-border);border-radius:10px;padding:14px;background:#fafafa">
+                <summary style="cursor:pointer;font-weight:800;font-size:.85rem;color:var(--text-dark);display:flex;align-items:center;gap:8px;list-style:none"><i class="fa-solid fa-gear" style="color:var(--text-gray)"></i> خيارات متقدمة <i class="fa-solid fa-chevron-down" style="margin-right:auto;transition:transform .2s;color:var(--text-gray)"></i></summary>
+                <div style="margin-top:14px;display:flex;flex-direction:column;gap:14px">
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+                    <div class="form-group">
+                      <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-clock" style="color:var(--fast7-gold)"></i> جدولة الإرسال</label>
+                      <input type="datetime-local" id="notifSchedule" class="form-input" style="padding:12px 14px;font-size:.9rem">
+                    </div>
+                    <div class="form-group">
+                      <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-bell" style="color:var(--fast7-blue)"></i> أولوية الإشعار</label>
+                      <select id="notifPriority" class="form-input" style="padding:12px 14px;font-size:.9rem">
+                        <option value="normal">🔔 عادي</option>
+                        <option value="high">🔴 عالي (يظهر في الأعلى)</option>
+                        <option value="urgent">🚨 عاجل (مع صوت/اهتزاز)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label style="display:flex;align-items:center;gap:6px;font-weight:800;font-size:.85rem;color:var(--text-dark)"><i class="fa-solid fa-tag" style="color:var(--fast7-gold)"></i> وسم / تصنيف (للفلترة لاحقاً)</label>
+                    <input type="text" id="notifTag" class="form-input" placeholder="مثال: تحديث_صيانة، عرض_رمضان، تحذير_أمان" style="padding:12px 14px;font-size:.9rem" maxlength="50" oninput="updateLiveCreatePreview()">
+                  </div>
+                </div>
+              </details>
+
+              <!-- Action Buttons -->
+              <div style="display:flex;gap:12px;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--fast7-border);margin-top:4px">
+                <button type="button" onclick="switchDashTab('tab-notifications')" class="btn-fast7 btn-fast7-ghost" style="padding:12px 22px;font-weight:700"><i class="fa-solid fa-xmark"></i> إلغاء ورجوع</button>
+                <button type="button" onclick="saveNotifDraft()" class="btn-fast7" style="background:#f1f5f9;color:#475569;padding:12px 22px;font-weight:700"><i class="fa-solid fa-floppy-disk"></i> مسودة</button>
+                <button type="submit" class="btn-fast7 btn-fast7-cyan animate-neon" style="padding:12px 28px;font-weight:800;font-size:.95rem"><i class="fa-solid fa-paper-plane"></i> إرسال الإشعار الآن</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- LEFT: LIVE PREVIEW PANEL -->
+          <div style="width:340px;flex-shrink:0;background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.03);position:sticky;top:20px">
+            <div style="font-size:.75rem;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+              <span style="width:8px;height:8px;border-radius:50%;background:#2563eb;display:inline-block"></span>
+              📱 المعاينة الحية في المتجر
+            </div>
+
+            <!-- Preview Mode Switch -->
+            <div style="display:flex;background:#e2e8f0;border-radius:10px;padding:3px;margin-bottom:16px">
+              <button type="button" id="prevBtnCard" onclick="switchLivePreviewTab('card')" style="flex:1;padding:6px;border:none;border-radius:8px;background:#fff;color:#0f172a;font-weight:800;font-size:.72rem;cursor:pointer;font-family:inherit">🔔 بطاقة الإشعار</button>
+              <button type="button" id="prevBtnArticle" onclick="switchLivePreviewTab('article')" style="flex:1;padding:6px;border:none;border-radius:8px;background:transparent;color:#64748b;font-weight:700;font-size:.72rem;cursor:pointer;font-family:inherit">📖 المقال كامل</button>
+            </div>
+
+            <!-- Live Phone Container -->
+            <div id="liveCreatePreviewBox">
+              <!-- JS Populated Live Preview -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 8: STORE DETAILS (embedded) -->
+      <div class="dash-tab-content" id="tab-store-details">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+          <div>
+            <span class="fast7-badge" id="sdStatusBadge" style="margin-bottom:6px">نشط 🟢</span>
+            <h2 style="font-size:1.6rem;font-weight:1000;color:var(--text-dark);margin:0" id="sdStoreName">المتجر</h2>
+            <p style="font-size:.85rem;color:var(--text-gray);margin:2px 0 0" id="sdSubdomain">https://store.fast7.com</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button onclick="sdPreviewStore()" class="btn-fast7 btn-fast7-glass"><i class="fa-solid fa-eye"></i> معاينة</button>
+            <button onclick="sdDepositMoney()" class="btn-fast7 btn-fast7-cyan"><i class="fa-solid fa-wallet"></i> شحن</button>
+            <button onclick="sdToggleSuspend()" class="btn-fast7" id="sdSuspendBtn" style="background:#ef4444;color:#fff"><i class="fa-solid fa-ban"></i> إيقاف</button>
+          </div>
+        </div>
+
+        <div class="details-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px">
+          <!-- Owner -->
+          <div class="fast7-card" style="background:#fff"><div style="font-size:.8rem;color:var(--text-gray);font-weight:800;margin-bottom:6px">المالك</div>
+            <div style="font-weight:900;font-size:1.1rem" id="sdOwner">أحمد</div>
+            <div style="font-size:.82rem;color:var(--text-gray)" id="sdOwnerContact">0590000000</div>
+          </div>
+          <!-- Plan -->
+          <div class="fast7-card" style="background:#fff"><div style="font-size:.8rem;color:var(--text-gray);font-weight:800;margin-bottom:6px">الاشتراك</div>
+            <div style="font-weight:900;font-size:1.1rem;color:var(--fast7-blue)" id="sdPlanName">مجانية</div>
+            <select onchange="sdChangePlan(this.value)" id="sdPlanSelect" class="form-input" style="padding:4px 8px;font-size:.82rem;margin-top:4px">
+              <option value="free">مجانية</option>
+              <option value="monthly">شهرية</option>
+              <option value="annual">سنوية VIP</option>
+            </select>
+          </div>
+          <!-- Balance -->
+          <div class="fast7-card" style="background:#fff;border-color:var(--fast7-blue)"><div style="font-size:.8rem;color:var(--text-gray);font-weight:800;margin-bottom:6px">الرصيد</div>
+            <div style="font-weight:1000;font-size:1.8rem" id="sdBalance">+0 ₪</div>
+            <div style="font-size:.78rem;color:var(--text-gray)">مودع: <span id="sdDeposited">0</span> ₪ | عمولات: <span id="sdAccrued">0</span> ₪</div>
+          </div>
+          <!-- Per-Store Config -->
+          <div class="fast7-card" style="background:#fff;border-color:var(--fast7-gold)"><div style="font-size:.8rem;color:var(--text-gray);font-weight:800;margin-bottom:6px">🔧 إعدادات خاصة</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <div><label style="font-size:.65rem;font-weight:700;color:var(--text-gray)">رسم الطلب</label><input type="number" id="sdCfgFree" class="form-input" style="padding:4px 6px;font-size:.78rem"></div>
+              <div><label style="font-size:.65rem;font-weight:700;color:var(--text-gray)">الحد</label><input type="number" id="sdCfgLimit" class="form-input" style="padding:4px 6px;font-size:.78rem"></div>
+              <div><label style="font-size:.65rem;font-weight:700;color:var(--text-gray)">شهري</label><input type="number" id="sdCfgMonthly" class="form-input" style="padding:4px 6px;font-size:.78rem"></div>
+              <div><label style="font-size:.65rem;font-weight:700;color:var(--text-gray)">سنوي</label><input type="number" id="sdCfgAnnual" class="form-input" style="padding:4px 6px;font-size:.78rem"></div>
+            </div>
+            <button onclick="sdSaveConfig()" class="btn-fast7 btn-fast7-cyan" style="width:100%;margin-top:6px;padding:5px;font-size:.75rem"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>
+          </div>
+        </div>
+
+        <!-- Store Password -->
+        <div class="fast7-card" style="background:#fff;margin-bottom:16px">
+          <div style="font-size:.8rem;color:var(--text-gray);font-weight:800;margin-bottom:8px"><i class="fa-solid fa-key"></i> كلمة سر المتجر</div>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="sdStoreNewPass" class="form-input" style="flex:1;padding:8px 12px;font-size:.82rem;text-align:center;direction:ltr" placeholder="كلمة سر جديدة">
+            <button onclick="sdChangeStorePassword()" class="btn-fast7 btn-fast7-cyan" style="padding:8px 16px;font-size:.78rem;white-space:nowrap"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>
+          </div>
+          <div style="font-size:.7rem;color:#94a3b8;margin-top:6px">صاحب المتجر يستخدمها لدخول لوحة التحكم</div>
+        </div>
+
+        <!-- Delete Store -->
+        <div class="fast7-card" style="background:#fff;border-color:#ef4444;margin-bottom:16px" id="sdDeleteSection">
+          <div style="font-size:.8rem;color:#ef4444;font-weight:800;margin-bottom:8px"><i class="fa-solid fa-trash-can"></i> منطقة الخطر</div>
+          <p style="font-size:.75rem;color:#64748b;margin:0 0 10px;line-height:1.5">حذف المتجر نهائياً مع جميع بياناته (المنتجات، الطلبات، العملاء). لا يمكن التراجع عن هذه العملية.</p>
+          <button onclick="sdDeleteStore()" class="btn-fast7" style="background:#ef4444;color:#fff;padding:10px 20px;font-size:.82rem"><i class="fa-solid fa-trash-can"></i> حذف المتجر نهائياً</button>
+        </div>
+
+        <!-- Suspension Banner -->
+        <div id="sdSuspBanner" style="display:none;background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #ef4444;border-radius:14px;padding:14px 20px;margin-bottom:16px;align-items:center;gap:14px">
+          <span style="font-size:1.8rem">⛔</span>
+          <div style="flex:1;font-size:.85rem;font-weight:700;color:#dc2626">موقوف — <span id="sdSuspReason">مستحقات</span></div>
+          <button onclick="sdToggleSuspend()" class="btn-fast7" style="background:#10b981;color:#fff;padding:6px 16px;font-size:.78rem">إعادة تفعيل</button>
+        </div>
+
+        <!-- Deposits Table -->
+        <div class="saas-table-box" style="background:#fff;margin-bottom:16px">
+          <h4 style="font-size:.95rem;font-weight:900;margin:0 0 12px"><i class="fa-solid fa-receipt" style="color:var(--fast7-emerald)"></i> سجل الشحن</h4>
+          <div style="max-height:200px;overflow-y:auto"><table class="saas-table"><thead><tr><th>التاريخ</th><th>المبلغ</th><th>الطريقة</th><th>ملاحظات</th></tr></thead><tbody id="sdDepositsBody"></tbody></table></div>
+        </div>
+        <!-- Orders Table -->
+        <div class="saas-table-box" style="background:#fff">
+          <h4 style="font-size:.95rem;font-weight:900;margin:0 0 12px"><i class="fa-solid fa-cart-flatbed" style="color:var(--fast7-blue)"></i> سجل الطلبات</h4>
+          <div style="max-height:200px;overflow-y:auto"><table class="saas-table"><thead><tr><th>#</th><th>المشتري</th><th>الإجمالي</th><th>العمولة</th></tr></thead><tbody id="sdOrdersBody"></tbody></table></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="dashboard.js"></script>
+  <script>
+    function switchDashTab(tabId, btnEl) {
+      document.querySelectorAll('.dash-tab-content').forEach(t => { t.classList.remove('active'); t.style.display = 'none'; });
+      document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+      var el = document.getElementById(tabId);
+      if (el) { el.classList.add('active'); el.style.display = 'block'; }
+      if (btnEl) btnEl.classList.add('active');
+      if (tabId !== 'tab-store-details') location.hash = tabId.replace('tab-', '');
+    }
+    function routeDashTab() {
+      var hash = location.hash.replace('#', '');
+      if (!hash) { hash = 'overview'; }
+      if (hash.indexOf('store-details') === 0) {
+        var parts = hash.split('/');
+        var storeId = parts[1] || 'default';
+        if (typeof openStoreDetailsPage === 'function') {
+          openStoreDetailsPage(storeId);
+        }
+        var el = document.getElementById('tab-store-details');
+        if (el) {
+          document.querySelectorAll('.dash-tab-content').forEach(t => { t.classList.remove('active'); t.style.display = 'none'; });
+          el.classList.add('active');
+          el.style.display = 'block';
+        }
+        return;
+      }
+      var tabId = 'tab-' + hash;
+      if (!document.getElementById(tabId)) { tabId = 'tab-overview'; }
+      var btns = document.querySelectorAll('.sidebar-btn');
+      var btn = null;
+      btns.forEach(function(b) {
+        var m = b.getAttribute('onclick');
+        if (m && m.indexOf("'" + tabId + "'") !== -1) btn = b;
+      });
+      switchDashTab(tabId, btn);
+    }
+    window.addEventListener('hashchange', routeDashTab);
+    routeDashTab();
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+footer>
+
+<div class="sheet-overlay" id="wishlistSheet">
+  <div class="backdrop" onclick="closeWishlistSheet()"></div>
+  <div class="sheet">
+    <div class="sheet-grabber"></div>
+    <div class="sheet-header">
+      <button class="close-btn" onclick="closeWishlistSheet()"><i class="fa-solid fa-xmark"></i></button>
+      <h2>❤️ المفضلة</h2>
+    </div>
+    <div class="sheet-body" style="padding-bottom:20px">
+      <div id="wishlistItems"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Subscription Sheet -->
+<div class="sheet-overlay" id="subscriptionSheet">
+  <div class="backdrop" onclick="closeSubscriptionSheet()"></div>
+  <div class="sheet">
+    <div class="sheet-grabber"></div>
+    <div class="sheet-header">
+      <button class="close-btn" onclick="closeSubscriptionSheet()"><i class="fa-solid fa-x

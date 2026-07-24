@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل المتجر والسجل المالي | FAST7 SaaS Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900;1000&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="animations.css">
+  <style>
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+  </style>
+</head>
+<body style="background:#f8fafc;padding-bottom:60px">
+
+  <!-- Header Bar -->
+  <header class="fast7-navbar" style="background:#ffffff">
+    <a href="dashboard.html" class="fast7-brand">
+      <div class="logo-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
+      <span>FAST<strong style="color:var(--fast7-blue)">7</strong> <small style="font-size:0.75rem;color:var(--fast7-gold);font-weight:900">تفاصيل المتجر</small></span>
+    </a>
+    <div class="fast7-nav-btns">
+      <a href="dashboard.html" class="btn-fast7 btn-fast7-glass"><i class="fa-solid fa-arrow-right"></i> العودة للوحة التحكم</a>
+      <button onclick="agencyLogout()" class="btn-fast7" style="background:#ef4444;color:#fff"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+    </div>
+  </header>
+
+  <div class="fast7-container" style="margin-top:36px">
+    
+    <!-- Top Action & Title Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px">
+      <div>
+        <span class="fast7-badge" id="storeStatusBadge" style="margin-bottom:8px">نشط 🟢</span>
+        <h1 style="font-size:2.4rem;font-weight:1000;color:var(--text-dark)" id="storeTitleHeading">متجر الأناقة</h1>
+        <p style="font-size:1rem;color:var(--text-gray)" id="storeSubdomainHeading">https://store.fast7.com</p>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button onclick="previewCurrentStore()" class="btn-fast7 btn-fast7-glass"><i class="fa-solid fa-eye"></i> معاينة المتجر</button>
+        <button onclick="depositMoneyModal()" class="btn-fast7 btn-fast7-cyan animate-neon"><i class="fa-solid fa-wallet"></i> + شحن رصيد</button>
+        <button onclick="editStoreModal()" class="btn-fast7 btn-fast7-purple"><i class="fa-solid fa-pen"></i> تعديل</button>
+        <button id="suspendBtn" onclick="toggleSuspensionDetails()" class="btn-fast7" style="background:#ef4444;color:#fff"><i class="fa-solid fa-ban"></i> إيقاف مؤقت</button>
+        <button onclick="sendReminderDetails()" class="btn-fast7 btn-fast7-glass" style="color:var(--fast7-emerald);border:1.5px solid var(--fast7-emerald)"><i class="fa-brands fa-whatsapp"></i> تذكير بالدفع</button>
+      </div>
+    </div>
+
+    <!-- Metrics Cards Grid -->
+    <div class="details-grid">
+      <!-- Card 1: Owner Info -->
+      <div class="fast7-card" style="background:#ffffff">
+        <div style="font-size:0.85rem;color:var(--text-gray);font-weight:800;margin-bottom:10px">معلومات صاحب المتجر</div>
+        <h3 style="font-size:1.4rem;font-weight:900;color:var(--text-dark);margin-bottom:6px" id="ownerNameVal">أحمد محمود</h3>
+        <p style="font-size:0.9rem;color:var(--text-gray);margin-bottom:12px" id="ownerEmailVal">owner@domain.com</p>
+        <a id="ownerPhoneLink" href="#" target="_blank" class="btn-fast7 btn-fast7-glass" style="padding:6px 16px;font-size:0.82rem;color:var(--fast7-emerald)">
+          <i class="fa-brands fa-whatsapp"></i> <span id="ownerPhoneVal">0590000000</span>
+        </a>
+      </div>
+
+      <!-- Card 2: Subscription Plan -->
+      <div class="fast7-card" style="background:#ffffff">
+        <div style="font-size:0.85rem;color:var(--text-gray);font-weight:800;margin-bottom:10px">خطة الاشتراك الحالية</div>
+        <h3 style="font-size:1.4rem;font-weight:900;color:var(--fast7-blue);margin-bottom:6px" id="planNameVal">الخطة المجانية</h3>
+        <p style="font-size:0.88rem;color:var(--text-gray);margin-bottom:14px" id="planFeeVal">2 ₪ رسم فقط عند كل طلب مكتمل</p>
+        <select onchange="updatePlanFromDetails(this.value)" id="planSelectBox" class="form-input" style="padding:6px 12px;font-size:0.85rem">
+          <option value="free">الخطة المجانية (0 ₪ + 2₪/طلب)</option>
+          <option value="monthly">الخطة الشهرية (100 ₪ / شهر)</option>
+          <option value="annual">الخطة السنوية VIP (1000 ₪ / سنة)</option>
+        </select>
+      </div>
+
+      <!-- Card 3: Per-Store Plan Config -->
+      <div class="fast7-card" style="background:#ffffff;border-color:var(--fast7-gold)">
+        <div style="font-size:0.85rem;color:var(--text-gray);font-weight:800;margin-bottom:10px">🔧 إعدادات الخطة (خاص بهذا المتجر)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><label style="font-size:.75rem;font-weight:700;color:var(--text-gray);display:block;margin-bottom:2px">رسم الطلب (₪)</label><input type="number" id="cfgFreeFee" class="form-input" style="padding:6px 8px;font-size:.85rem"></div>
+          <div><label style="font-size:.75rem;font-weight:700;color:var(--text-gray);display:block;margin-bottom:2px">حد الرسوم (₪)</label><input type="number" id="cfgFeeLimit" class="form-input" style="padding:6px 8px;font-size:.85rem"></div>
+          <div><label style="font-size:.75rem;font-weight:700;color:var(--text-gray);display:block;margin-bottom:2px">الشهرية (₪)</label><input type="number" id="cfgMonthly" class="form-input" style="padding:6px 8px;font-size:.85rem"></div>
+          <div><label style="font-size:.75rem;font-weight:700;color:var(--text-gray);display:block;margin-bottom:2px">السنوية (₪)</label><input type="number" id="cfgAnnual" class="form-input" style="padding:6px 8px;font-size:.85rem"></div>
+        </div>
+        <button onclick="saveStoreConfig()" class="btn-fast7 btn-fast7-cyan" style="width:100%;margin-top:10px;padding:8px;font-size:.82rem"><i class="fa-solid fa-floppy-disk"></i> حفظ إعدادات هذا المتجر</button>
+      </div>
+
+      <!-- Card 4: Financial Balance Ledger -->
+      <div class="fast7-card" style="background:#ffffff;border-color:var(--fast7-blue)">
+        <div style="font-size:0.85rem;color:var(--text-gray);font-weight:800;margin-bottom:10px">رصيد محفظة المتجر المتبقي 💳</div>
+        <h3 style="font-size:2.2rem;font-weight:1000;color:var(--fast7-emerald);margin-bottom:6px" id="netBalanceVal">+100 ₪</h3>
+        <div style="font-size:0.85rem;color:var(--text-gray);display:flex;justify-content:space-between;margin-top:12px;border-top:1px solid var(--fast7-border);padding-top:8px">
+          <span>المبالغ المودعة: <strong id="depositedVal">100 ₪</strong></span>
+          <span>العمولات المستحقة: <strong id="accruedVal">0 ₪</strong></span>
+        </div>
+      </div>
+
+      <!-- Card 4: Suspension Status -->
+      <div class="fast7-card" id="suspensionCard" style="background:#ffffff">
+        <div style="font-size:0.85rem;color:var(--text-gray);font-weight:800;margin-bottom:10px">حالة تشغيل المتجر ⚡</div>
+        <div id="suspStatusBig" style="font-size:1.9rem;font-weight:1000;margin-bottom:10px;color:var(--fast7-emerald)">🟢 نشط وجاهز</div>
+        <p id="suspStatusDesc" style="font-size:0.86rem;color:var(--text-gray);margin-bottom:16px">المتجر يعمل بشكل طبيعي ويستقبل الطلبات.</p>
+        <button id="suspendCardBtn" onclick="toggleSuspensionDetails()" class="btn-fast7" style="width:100%;background:#ef4444;color:#fff;padding:10px">
+          <i class="fa-solid fa-ban"></i> إيقاف مؤقت لعدم الدفع
+        </button>
+      </div>
+    </div>
+
+    <!-- ⛔ Suspension Alert Banner (shown only when store is suspended) -->
+    <div id="suspensionAlertBanner" style="display:none;background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #ef4444;border-radius:18px;padding:20px 28px;margin-bottom:28px;display:none;align-items:center;gap:18px">
+      <div style="font-size:2.5rem">⛔</div>
+      <div style="flex:1">
+        <div style="font-size:1.1rem;font-weight:900;color:#dc2626;margin-bottom:4px">هذا المتجر موقوف مؤقتاً لعدم السداد</div>
+        <div style="font-size:0.9rem;color:#7f1d1d" id="suspensionReasonText">سبب الإيقاف: مستحقات مالية غير مسددة.</div>
+      </div>
+      <button onclick="toggleSuspensionDetails()" class="btn-fast7" style="background:#10b981;color:#fff;white-space:nowrap;padding:10px 22px">
+        <i class="fa-solid fa-circle-check"></i> إعادة التفعيل الآن
+      </button>
+    </div>
+
+    <!-- SECTION 1: FINANCIAL DEPOSITS & PAYMENT HISTORY TABLE -->
+    <div class="saas-table-box" style="background:#ffffff;margin-bottom:34px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h3 style="font-size:1.3rem;font-weight:900;color:var(--text-dark);margin:0;display:flex;align-items:center;gap:10px">
+          <i class="fa-solid fa-receipt" style="color:var(--fast7-emerald)"></i> سجل شحن الرصيد والعمليات المالية 💳
+        </h3>
+        <button onclick="depositMoneyModal()" class="btn-fast7 btn-fast7-cyan" style="padding:8px 18px;font-size:0.82rem">
+          <i class="fa-solid fa-plus"></i> شحن رصيد جديد
+        </button>
+      </div>
+
+      <table class="saas-table">
+        <thead>
+          <tr>
+            <th>تاريخ الإيداع</th>
+            <th>المبلغ المودع (شيكل)</th>
+            <th>طريقة الدفع</th>
+            <th>رقم المرجع / الملاحظات</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody id="depositsTableBody">
+          <!-- JS Populated -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 2: STORE CHECKOUT ORDERS LOG TABLE -->
+    <div class="saas-table-box" style="background:#ffffff">
+      <h3 style="font-size:1.3rem;font-weight:900;color:var(--text-dark);margin-bottom:20px;display:flex;align-items:center;gap:10px">
+        <i class="fa-solid fa-cart-flatbed" style="color:var(--fast7-blue)"></i> سجل الطلبات وعمولات الـ 2 ₪ الناتجة بالمتجر 🛒
+      </h3>
+
+      <table class="saas-table">
+        <thead>
+          <tr>
+            <th>رقم الطلب والتاريخ</th>
+            <th>اسم المشتري</th>
+            <th>الهاتف</th>
+            <th>إجمالي الطلب</th>
+            <th>رسم 2₪ الخصم المترتب</th>
+            <th>حالة الخصم من المحفظة</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+          <!-- JS Populated -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script src="dashboard.js"></script>
+  <script>
+    let currentStoreObj = null;
+
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function loadStoreDetailsView() {
+      const storeId = getQueryParam('id') || 'default';
+      const rawStores = localStorage.getItem('mycart_agency_stores_list');
+      let stores = [
+        {
+          id: 'default',
+          name: localStorage.getItem('mycart_store_name') || 'متجري الرئيسي (Default)',
+          subdomain: 'my-store',
+          ownerName: 'أحمد محمود',
+          ownerEmail: 'owner@fast7.com',
+          ownerPhone: '0590000000',
+          category: 'عام',
+          plan: localStorage.getItem('mycart_subscription_plan') || 'free',
+          status: 'active',
+          ordersCount: parseInt(localStorage.getItem('mycart_free_orders_count') || '0', 10),
+          depositedAmount: parseFloat(localStorage.getItem('mycart_store_deposited_default') || '100')
+        }
+      ];
+
+      if (rawStores) { try { stores = JSON.parse(rawStores); } catch(e) {} }
+
+      const st = stores.find(s => String(s.id) === String(storeId)) || stores[0];
+      currentStoreObj = st;
+
+      // Fill Headings & Text
+      document.getElementById('storeTitleHeading').textContent = st.name;
+      document.getElementById('storeSubdomainHeading').textContent = `https://${st.subdomain}.fast7.com`;
+      document.getElementById('ownerNameVal').textContent = st.ownerName || 'صاحب المتجر';
+      document.getElementById('ownerEmailVal').textContent = st.ownerEmail || 'admin@store.com';
+      document.getElementById('ownerPhoneVal').textContent = st.ownerPhone || '0590000000';
+      document.getElementById('ownerPhoneLink').href = `https://wa.me/${(st.ownerPhone || '').replace(/\s+/g,'')}`;
+
+      const plan = st.plan || 'free';
+      document.getElementById('planSelectBox').value = plan;
+      document.getElementById('planNameVal').textContent = plan === 'annual' ? 'الخطة السنوية VIP' : plan === 'monthly' ? 'الخطة الشهرية' : 'الخطة المجانية';
+      document.getElementById('planFeeVal').textContent = plan === 'free' ? '2 ₪ رسم فقط عند كل طلب مكتمل' : '0 ₪ عمولات على الطلبات (إعفاء 100%)';
+
+      // Fill per-store config fields
+      var cfg = st.config || {};
+      document.getElementById('cfgFreeFee').value = cfg.freeFee || '2';
+      document.getElementById('cfgFeeLimit').value = cfg.feeLimit || '100';
+      document.getElementById('cfgMonthly').value = cfg.monthlyFee || '100';
+      document.getElementById('cfgAnnual').value = cfg.annualFee || '1000';
+
+      const orders = st.ordersCount || (st.id === 'default' ? parseInt(localStorage.getItem('mycart_free_orders_count') || '0', 10) : 0);
+      const rate = plan === 'free' ? 2 : 0;
+      const accrued = orders * rate;
+      const deposited = st.depositedAmount || (st.id === 'default' ? parseFloat(localStorage.getItem('mycart_store_deposited_default') || '100') : 0);
+      const net = deposited - accrued;
+
+      document.getElementById('depositedVal').textContent = `${deposited} ₪`;
+      document.getElementById('accruedVal').textContent = `${accrued} ₪`;
+      document.getElementById('netBalanceVal').textContent = `${net >= 0 ? '+' : ''}${net} ₪`;
+      document.getElementById('netBalanceVal').style.color = net >= 0 ? 'var(--fast7-emerald)' : '#ef4444';
+
+      // Suspension status
+      const isSuspended = (st.status === 'suspended') ||
+        (st.id === 'default' && localStorage.getItem('mycart_store_suspended') === 'true');
+      const statusBadge = document.getElementById('storeStatusBadge');
+      const suspStatusBig = document.getElementById('suspStatusBig');
+      const suspStatusDesc = document.getElementById('suspStatusDesc');
+      const suspendCardBtn = document.getElementById('suspendCardBtn');
+      const suspendBtn = document.getElementById('suspendBtn');
+      const suspensionCard = document.getElementById('suspensionCard');
+
+      if (isSuspended) {
+        const reason = (st.id === 'default'
+          ? localStorage.getItem('mycart_store_suspend_reason')
+          : st.suspendReason) || 'مستحقات مالية غير مسددة للمنصة.';
+
+        if (statusBadge) { statusBadge.textContent = '⛔ موقوف مؤقتاً'; statusBadge.style.background = '#fee2e2'; statusBadge.style.color = '#ef4444'; }
+        if (suspStatusBig) { suspStatusBig.textContent = '⛔ موقوف لعدم الدفع'; suspStatusBig.style.color = '#ef4444'; }
+        if (suspStatusDesc) suspStatusDesc.textContent = 'المتجر موقوف حالياً. الزبائن يشوفون شاشة إيقاف بدل المتجر.';
+        if (suspendCardBtn) { suspendCardBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> إعادة تفعيل المتجر'; suspendCardBtn.style.background = '#10b981'; }
+        if (suspendBtn) { suspendBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> إعادة تفعيل'; suspendBtn.style.background = '#10b981'; }
+        if (suspensionCard) suspensionCard.style.border = '2px solid #ef4444';
+
+        const banner = document.getElementById('suspensionAlertBanner');
+        if (banner) {
+          banner.style.display = 'flex';
+          const reasonEl = document.getElementById('suspensionReasonText');
+          if (reasonEl) reasonEl.textContent = 'سبب الإيقاف: ' + reason;
+        }
+      } else {
+        if (statusBadge) { statusBadge.textContent = '🟢 نشط'; statusBadge.style.background = '#eef7e9'; statusBadge.style.color = '#3b610c'; }
+        if (suspStatusBig) { suspStatusBig.textContent = '🟢 نشط وجاهز'; suspStatusBig.style.color = 'var(--fast7-emerald)'; }
+        if (suspStatusDesc) suspStatusDesc.textContent = 'المتجر يعمل بشكل طبيعي ويستقبل الطلبات.';
+        if (suspendCardBtn) { suspendCardBtn.innerHTML = '<i class="fa-solid fa-ban"></i> إيقاف مؤقت لعدم الدفع'; suspendCardBtn.style.background = '#ef4444'; }
+        if (suspendBtn) { suspendBtn.innerHTML = '<i class="fa-solid fa-ban"></i> إيقاف مؤقت'; suspendBtn.style.background = '#ef4444'; }
+        if (suspensionCard) suspensionCard.style.border = '';
+
+        const banner = document.getElementById('suspensionAlertBanner');
+        if (banner) banner.style.display = 'none';
+      }
+
+
+      // Load Deposits Table
+      const rawDeposits = localStorage.getItem('mycart_deposits_log_' + st.id);
+      let deposits = [
+        { date: '2026/07/23 10:00 AM', amount: deposited > 0 ? deposited : 100, method: 'تحويـل بنكي / كاش', notes: 'إيداع رصيد ابتدائي لفتح المحفظة' }
+      ];
+      if (rawDeposits) { try { deposits = JSON.parse(rawDeposits); } catch(e) {} }
+
+      const depBody = document.getElementById('depositsTableBody');
+      depBody.innerHTML = deposits.map(d => `
+        <tr>
+          <td>${d.date}</td>
+          <td><strong style="color:var(--fast7-emerald)">+${d.amount} ₪</strong></td>
+          <td>${d.method}</td>
+          <td>${d.notes}</td>
+          <td><span style="background:#eef7e9;color:#3b610c;padding:4px 12px;border-radius:999px;font-size:0.8rem;font-weight:800">مكتمل ومكتسب</span></td>
+        </tr>
+      `).join('');
+
+      // Load Orders Table
+      const ordBody = document.getElementById('ordersTableBody');
+      if (orders === 0) {
+        ordBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-gray);padding:24px">لم يتم تسجيل أي طلبات حتى الآن بهذا المتجر.</td></tr>`;
+      } else {
+        let rows = '';
+        for(let i=1; i<=orders; i++) {
+          rows += `
+            <tr>
+              <td>#ORD-100${i} <br><small style="color:var(--text-gray)">2026/07/23</small></td>
+              <td>زبائن المتجر</td>
+              <td>059900000${i}</td>
+              <td><strong>150 ₪</strong></td>
+              <td><strong style="color:${rate > 0 ? 'var(--fast7-gold)' : 'var(--fast7-emerald)'}">${rate} ₪</strong></td>
+              <td><span style="background:#eef7e9;color:#3b610c;padding:3px 10px;border-radius:999px;font-size:0.78rem;font-weight:800">خصم تلقائي من المحفظة</span></td>
+            </tr>
+          `;
+        }
+        ordBody.innerHTML = rows;
+      }
+    }
+
+    function depositMoneyModal() {
+      if (!currentStoreObj) return;
+      depositStoreBalance(currentStoreObj.id);
+      loadStoreDetailsView();
+    }
+
+    function editStoreModal() {
+      if (!currentStoreObj) return;
+      editStoreDetails(currentStoreObj.id);
+      loadStoreDetailsView();
+    }
+
+    function previewCurrentStore() {
+      if (!currentStoreObj) return;
+      previewStore(currentStoreObj.subdomain);
+    }
+
+    function updatePlanFromDetails(newPlan) {
+      if (!currentStoreObj) return;
+      changeStorePlan(currentStoreObj.id, newPlan);
+      loadStoreDetailsView();
+    }
+
+    function toggleSuspensionDetails() {
+      if (!currentStoreObj) return;
+      const id = currentStoreObj.id;
+      const isCurrSuspended = currentStoreObj.status === 'suspended' ||
+        (id === 'default' && localStorage.getItem('mycart_store_suspended') === 'true');
+
+      let reason = '';
+      if (!isCurrSuspended) {
+        reason = prompt('ادخل سبب الإيقاف المؤقت للمتجر (سيظهر للزبائن والسجل):', 'مستحقات مالية غير مسددة للمنصة.');
+        if (reason === null) return; // user cancelled
+        if (!reason.trim()) reason = 'مستحقات مالية غير مسددة للمنصة.';
+      }
+
+      if (id === 'default') {
+        const nowSuspended = !isCurrSuspended;
+        localStorage.setItem('mycart_store_suspended', nowSuspended.toString());
+        if (nowSuspended) localStorage.setItem('mycart_store_suspend_reason', reason);
+        else localStorage.removeItem('mycart_store_suspend_reason');
+        currentStoreObj.status = nowSuspended ? 'suspended' : 'active';
+        showAlertModal(nowSuspended
+          ? '⛔ تم إيقاف المتجر مؤقتاً! سيرى الزبائن شاشة الإيقاف بدلاً من المتجر.'
+          : '🟢 تم إعادة تفعيل المتجر بنجاح!');
+      } else {
+        const rawStores = localStorage.getItem('mycart_agency_stores_list');
+        let stores = [];
+        if (rawStores) { try { stores = JSON.parse(rawStores); } catch(e) {} }
+        const st = stores.find(s => String(s.id) === String(id));
+        if (st) {
+          st.status = isCurrSuspended ? 'active' : 'suspended';
+          if (!isCurrSuspended) st.suspendReason = reason;
+          else delete st.suspendReason;
+          localStorage.setItem('mycart_agency_stores_list', JSON.stringify(stores));
+          currentStoreObj.status = st.status;
+          currentStoreObj.suspendReason = st.suspendReason || '';
+          showAlertModal(st.status === 'suspended'
+            ? '⛔ تم إيقاف المتجر لعدم الدفع!'
+            : '🟢 تم إعادة تفعيل المتجر!');
+        }
+      }
+      loadStoreDetailsView();
+    }
+
+    function saveStoreConfig() {
+      if (!currentStoreObj) return;
+      var config = {
+        freeFee: document.getElementById('cfgFreeFee').value || '2',
+        feeLimit: document.getElementById('cfgFeeLimit').value || '100',
+        monthlyFee: document.getElementById('cfgMonthly').value || '100',
+        annualFee: document.getElementById('cfgAnnual').value || '1000'
+      };
+      var id = currentStoreObj.id;
+      if (id === 'default') {
+        localStorage.setItem('mycart_store_private_config', JSON.stringify(config));
+        currentStoreObj.config = config;
+      } else {
+        var raw = localStorage.getItem('mycart_agency_stores_list');
+        var stores = [];
+        if (raw) { try { stores = JSON.parse(raw); } catch(e) {} }
+        var st = stores.find(function(s) { return String(s.id) === String(id); });
+        if (st) { st.config = config; localStorage.setItem('mycart_agency_stores_list', JSON.stringify(stores)); }
+        currentStoreObj.config = config;
+      }
+      showAlertModal('✅ تم حفظ إعدادات المتجر بنجاح!');
+    }
+
+    function sendReminderDetails() {
+      if (!currentStoreObj) return;
+      const st = currentStoreObj;
+      const phone = (st.ownerPhone || '0590000000').replace(/\s+/g, '');
+      const orders = st.ordersCount || 0;
+      const dueFees = orders * 2;
+      const msg = `مرحباً ${st.ownerName || 'صاحب المتجر'} 👋،
+هذا تذكير من فريق منصة FAST7 Commerce. يوجد لدى متجرك “${st.name}” مستحقات بمبلغ (${dueFees} ₪). يُرجى التسوية لتجنب إيقاف الخدمة. شكراً لتفهمكم.`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAgencyAuth();
+      loadStoreDetailsView();
+    });
+  </script>
+</body>
+</html>

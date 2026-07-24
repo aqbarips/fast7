@@ -1,0 +1,8 @@
+{
+  "id": "clothing",
+  "name": "أزياء وملابس",
+  "description": "قالب متخصص للملابس والأزياء والموضة",
+  "icon": "fa-solid fa-shirt",
+  "color": "#ec4899",
+  "order": 2
+}

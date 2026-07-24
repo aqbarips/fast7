@@ -1,0 +1,8 @@
+{
+  "id": "default",
+  "name": "عام",
+  "description": "قالب عام مناسب لجميع أنواع المتاجر",
+  "icon": "fa-solid fa-store",
+  "color": "#2563eb",
+  "order": 0
+}

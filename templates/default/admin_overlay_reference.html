@@ -1,0 +1,51 @@
+<!-- Admin Panel Overlay -->
+<div id="adminOverlay">
+  <div class="admin-backdrop" onclick="closeAdmin()"></div>
+  <div class="admin-panel">
+    <div class="admin-topbar">
+      <button class="admin-menu-btn" onclick="toggleAdminSidebar()"><i class="fa-solid fa-bars"></i></button>
+      <h2 id="adminPageTitle">لوحة التحكم</h2>
+      <div style="display:flex;align-items:center;gap:4px">
+        <button id="adminNotifBtn" onclick="showAdminNotifPanel()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text);padding:4px 6px;position:relative"><i class="fa-solid fa-bell"></i><span id="adminNotifBadge" style="display:none;position:absolute;top:-2px;right:-2px;background:#ef4444;color:#fff;font-size:.55rem;width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;font-weight:800">0</span></button>
+        <span id="adminFeeBadge" onclick="switchAdminTab('subscription')" style="display:none;background:rgba(245,158,11,.15);color:#f59e0b;font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap;cursor:pointer"></span>
+        <button class="admin-close" onclick="closeAdmin()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <div class="admin-body">
+      <aside class="admin-sidebar" id="adminSidebar">
+        <button class="active" onclick="switchAdminTab('dashboard')"><i class="fa-solid fa-chart-simple"></i> الإحصائيات</button>
+        <button onclick="switchAdminTab('orders')"><i class="fa-solid fa-receipt"></i> الطلبات <span id="adminOrderBadge">0</span></button>
+        <button onclick="switchAdminTab('products')"><i class="fa-solid fa-box"></i> المنتجات</button>
+        <button onclick="switchAdminTab('categories')"><i class="fa-solid fa-tags"></i> التصنيفات</button>
+        <button onclick="switchAdminTab('addProduct')"><i class="fa-solid fa-plus-circle"></i> إضافة منتج</button>
+        <button onclick="switchAdminTab('settings')"><i class="fa-solid fa-gear"></i> الإعدادات</button>
+        <button onclick="switchAdminTab('appearance')"><i class="fa-solid fa-palette"></i> المظهر والتخطيط</button>
+        <button onclick="switchAdminTab('subscription')"><i class="fa-solid fa-crown" style="color:#f59e0b"></i> الاشتراك <span style="font-size:.6rem;background:rgba(245,158,11,.2);color:#f59e0b;padding:1px 6px;border-radius:999px;margin-right:auto">ترقية</span></button>
+        <div style="position: relative; width: 100%;">
+          <button onclick="toggleAdminMktSubMenu(event); switchAdminTab('marketing', 'seo')"><i class="fa-solid fa-bullhorn"></i> التسويق <i class="fa-solid fa-chevron-down" style="font-size:0.7rem; margin-right:auto; transition: transform 0.2s;" id="adminMktChevron"></i></button>
+          <div id="adminMktSubMenu" style="display:none; flex-direction:column; background:rgba(0,0,0,0.05); padding:4px 0; border-radius:8px; margin:4px 8px; gap:2px;">
+            <button class="submenu-btn" onclick="switchAdminTab('marketing', 'seo')" style="font-size:0.75rem; padding:8px 12px; font-weight:500; background:none; border:none; width:100%; text-align:right; color:var(--text); cursor:pointer; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-magnifying-glass" style="font-size:0.7rem"></i> البحث والبانرات</button>
+            <button class="submenu-btn" onclick="switchAdminTab('marketing', 'social')" style="font-size:0.75rem; padding:8px 12px; font-weight:500; background:none; border:none; width:100%; text-align:right; color:var(--text); cursor:pointer; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-share-nodes" style="font-size:0.7rem"></i> التواصل والتتبع</button>
+            <button class="submenu-btn" onclick="switchAdminTab('marketing', 'offers')" style="font-size:0.75rem; padding:8px 12px; font-weight:500; background:none; border:none; width:100%; text-align:right; color:var(--text); cursor:pointer; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-tags" style="font-size:0.7rem"></i> العروض والكميات</button>
+            <button class="submenu-btn" onclick="switchAdminTab('marketing', 'widgets')" style="font-size:0.75rem; padding:8px 12px; font-weight:500; background:none; border:none; width:100%; text-align:right; color:var(--text); cursor:pointer; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-bullhorn" style="font-size:0.7rem"></i> تنبيهات وإعلانات</button>
+            <button class="submenu-btn" onclick="switchAdminTab('marketing', 'reviews')" style="font-size:0.75rem; padding:8px 12px; font-weight:500; background:none; border:none; width:100%; text-align:right; color:var(--text); cursor:pointer; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-star" style="font-size:0.7rem"></i> التقييمات والعجلة</button>
+            <button class="submenu-btn" onclick="switchAdminTab('marketing', 'popup')" style="font-size:0.75rem; padding:8px 12px; font-weight:500; background:none; border:none; width:100%; text-align:right; color:var(--text); cursor:pointer; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-window-restore" style="font-size:0.7rem"></i> النافذة الترويجية</button>
+          </div>
+        </div>
+        <button onclick="adminLogout()" style="color:#ef4444;margin-top:auto"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+      </aside>
+      <div class="admin-content" id="adminContent">
+        <div class="admin-tab active" id="admin-dashboard"></div>
+        <div class="admin-tab" id="admin-orders"></div>
+        <div class="admin-tab" id="admin-products"></div>
+        <div class="admin-tab" id="admin-categories"></div>
+        <div class="admin-tab" id="admin-addProduct"></div>
+        <div class="admin-tab" id="admin-settings"></div>
+        <div class="admin-tab" id="admin-appearance"></div>
+        <div class="admin-tab" id="admin-marketing"></div>
+        <div class="admin-tab" id="admin-subscription"></div>
+        <div class="admin-tab" id="admin-orderDetail"></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAST7 — أدر متجرك الإلكتروني باحتراف</title>
+  <meta name="description" content="FAST7 — منصة متكاملة لإنشاء وإدارة وتوسيع متجرك الإلكتروني. ابدأ مجاناً، بع باحتراف، ووسّع أعمالك بسهولة." />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900;1000&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="animations.css">
+  <style>
+    :root {
+      --bg-light: #fafafa;
+      --card-bg: #ffffff;
+      --text-ink: #111111;
+      --text-muted: #666666;
+      --border-light: #e5e5e5;
+      --brand-green: #658d1b;
+      --brand-green-bright: #90C040;
+      --primary-blue: #2563eb;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Cairo', -apple-system, sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-ink);
+      direction: rtl;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .storify-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(250, 250, 250, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 18px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+    .storify-logo {
+      font-size: 1.8rem;
+      font-weight: 1000;
+      color: var(--text-ink);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .storify-logo span { color: var(--primary-blue); }
+
+    .storify-menu {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+    .storify-menu a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.92rem;
+      transition: color 0.2s;
+    }
+    .storify-menu a:hover { color: var(--text-ink); }
+
+    .storify-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn-storify-dark {
+      background: var(--text-ink);
+      color: #ffffff;
+      padding: 11px 24px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .btn-storify-dark:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    }
+
+    .btn-storify-light {
+      background: #efefef;
+      color: var(--text-ink);
+      padding: 11px 24px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-storify-light:hover { background: #e2e2e2; transform: translateY(-2px); }
+
+    /* Hero Section */
+    .storify-hero {
+      padding: 80px 20px 60px;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .storify-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    .dot-green {
+      width: 8px;
+      height: 8px;
+      background: var(--brand-green-bright);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--brand-green-bright);
+    }
+
+    .storify-title {
+      font-size: 3.8rem;
+      font-weight: 1000;
+      line-height: 1.15;
+      color: var(--text-ink);
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+    .storify-title span { color: var(--primary-blue); }
+
+    .storify-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 36px;
+      font-weight: 600;
+      line-height: 1.7;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 50px;
+    }
+
+    /* Steps Bar & Preview Mockup */
+    .steps-pill-bar {
+      display: inline-flex;
+      background: #ffffff;
+      padding: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-light);
+      gap: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+    .step-pill-item {
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-pill-item.done {
+      background: #eef7e9;
+      color: #3b610c;
+    }
+    .step-pill-item.active {
+      background: #eff6ff;
+      color: var(--primary-blue);
+    }
+
+    .mockup-preview-box {
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+      max-width: 820px;
+      margin: 0 auto;
+      text-align: right;
+      transition: all 0.3s ease;
+    }
+    .mockup-preview-box:hover {
+      box-shadow: 0 30px 80px rgba(37, 99, 235, 0.12);
+      transform: translateY(-4px);
+    }
+
+    /* Features Cards */
+    .section-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 80px 20px;
+    }
+    .sec-head {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .sec-head h2 {
+      font-size: 2.5rem;
+      font-weight: 1000;
+      color: var(--text-ink);
+      margin-bottom: 12px;
+    }
+    .sec-head p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+
+    .feature-card {
+      background: #ffffff;
+      border: 1.5px solid var(--border-light);
+      border-radius: 24px;
+      padding: 36px 40px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+      transition: all 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(37, 99, 235, 0.1);
+      border-color: var(--primary-blue);
+    }
+
+    /* PRICING SECTION - 3 COMPLETE PLANS */
+    .pricing-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 26px;
+      margin-top: 40px;
+    }
+
+    .plan-card-box {
+      background: #ffffff;
+      border: 2px solid var(--border-light);
+      border-radius: 28px;
+      padding: 38px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .plan-card-box:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    }
+
+    .plan-card-box.vip-plan {
+      border-color: var(--primary-blue);
+      box-shadow: 0 20px 60px rgba(37, 99, 235, 0.15);
+    }
+
+    .vip-badge-tag {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--primary-blue), #7c3aed);
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 1000;
+      padding: 5px 22px;
+      border-radius: 999px;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    .price-num-display {
+      font-size: 2.8rem;
+      font-weight: 1000;
+      color: var(--text-ink);
+      margin: 16px 0;
+    }
+    .price-num-display span {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .plan-feats-list {
+      list-style: none;
+      margin: 20px 0 32px;
+      flex: 1;
+      text-align: right;
+    }
+    .plan-feats-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.93rem;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border-light);
+      color: var(--text-ink);
+    }
+    .plan-feats-list li i { color: #10b981; }
+
+    /* Pre-footer Dark Banner */
+    .prefooter-banner {
+      background: #111111;
+      color: #ffffff;
+      border-radius: 32px;
+      padding: 60px 40px;
+      text-align: center;
+      max-width: 1080px;
+      margin: 40px auto 80px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .btn-lime {
+      background: var(--brand-green-bright);
+      color: #111111;
+      padding: 14px 34px;
+      border-radius: 999px;
+      font-weight: 900;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(144, 192, 64, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-lime:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(144, 192, 64, 0.6);
+    }
+
+    footer {
+      border-top: 1px solid var(--border-light);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      background: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Storify Navbar -->
+  <header class="storify-nav">
+    <a href="#" class="storify-logo">FAST<span>7</span></a>
+    
+    <ul class="storify-menu">
+      <li><a href="#features">المميزات</a></li>
+      <li><a href="#demo">العرض</a></li>
+      <li><a href="#pricing">الخطط والأسعار</a></li>
+      <li><a href="#faq">الأسئلة الشائعة</a></li>
+      <li><a href="login.html">دخول الأدمن</a></li>
+    </ul>
+
+    <div class="storify-actions">
+      <a href="login.html" style="color:var(--text-muted);text-decoration:none;font-weight:700;font-size:0.9rem">تسجيل الدخول</a>
+      <a href="create-store.html" class="btn-storify-dark animate-neon">جرب FAST7 مجاناً ❯</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="storify-hero">
+    <div class="storify-pill-badge animate-fade-up">
+      <span class="dot-green"></span>
+      جديد: منظومة المتاجر السريعة 2.0 متوفرة الآن ⚡
+    </div>
+
+    <h1 class="storify-title animate-fade-up">
+      أدر متجرك الإلكتروني<br>
+      باحتراف مع <span>FAST7</span>
+    </h1>
+
+    <p class="storify-subtitle animate-fade-up">
+      منصة متكاملة لإنشاء وإدارة وتوسيع متجرك بسهولة. من الإعداد إلى المبيعات — كل شيء في مكان واحد.
+    </p>
+
+    <div class="hero-cta-group animate-fade-up">
+      <a href="create-store.html" class="btn-storify-dark" style="padding:14px 34px;font-size:1rem">جرب FAST7 مجاناً ❯</a>
+      <a href="#features" class="btn-storify-light" style="padding:14px 28px;font-size:1rem">استكشف المزايا</a>
+    </div>
+
+    <!-- Steps Pill Navigation -->
+    <div class="steps-pill-bar animate-fade-up">
+      <div class="step-pill-item done"><i class="fa-solid fa-check"></i> إنشاء المتجر</div>
+      <div class="step-pill-item done"><i class="fa-solid fa-check"></i> الإطلاق</div>
+      <div class="step-pill-item done"><i class="fa-solid fa-check"></i> الطلبات</div>
+      <div class="step-pill-item active"><i class="fa-solid fa-chart-simple"></i> التحليلات</div>
+    </div>
+
+    <!-- Hero Mockup Display Box -->
+    <div class="mockup-preview-box animate-float-fast7">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid var(--border-light);padding-bottom:14px">
+        <div>
+          <span style="font-size:0.85rem;color:var(--text-muted);font-weight:700">إجمالي مبيعات اليوم</span>
+          <div style="font-size:2.2rem;font-weight:1000;color:var(--text-ink)">$24,850 📈</div>
+        </div>
+        <span style="background:#eef7e9;color:#3b610c;padding:6px 16px;border-radius:999px;font-weight:800;font-size:0.85rem">
+          +18.2% مقارنة بالأسبوع الماضي
+        </span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+        <div style="background:#fafafa;padding:16px;border-radius:16px;border:1px solid var(--border-light)">
+          <div style="font-size:0.8rem;color:var(--text-muted)">الطلبات المكتملة</div>
+          <div style="font-size:1.5rem;font-weight:900;color:var(--text-ink)">47 طلب</div>
+        </div>
+        <div style="background:#fafafa;padding:16px;border-radius:16px;border:1px solid var(--border-light)">
+          <div style="font-size:0.8rem;color:var(--text-muted)">عدد الزوار</div>
+          <div style="font-size:1.5rem;font-weight:900;color:var(--text-ink)">1,280 زائر</div>
+        </div>
+        <div style="background:#fafafa;padding:16px;border-radius:16px;border:1px solid var(--border-light)">
+          <div style="font-size:0.8rem;color:var(--text-muted)">معدل التحويل</div>
+          <div style="font-size:1.5rem;font-weight:900;color:var(--primary-blue)">4.8% 🔥</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="section-wrap">
+    <div class="sec-head animate-fade-up">
+      <span style="color:var(--primary-blue);font-weight:800;font-size:0.9rem">المزايا</span>
+      <h2>ليش التجار بيختاروا FAST7؟</h2>
+      <p>كل ميزة مصممة لتسريع تجارتك وزيادة مبيعاتك اليومية</p>
+    </div>
+
+    <!-- Feature Card 1 -->
+    <div class="feature-card animate-fade-up">
+      <div style="flex:1">
+        <span style="font-size:0.85rem;color:var(--primary-blue);font-weight:800">01. وفر وقت البداية</span>
+        <h3 style="font-size:1.6rem;font-weight:900;margin:6px 0 10px">5 دقائق ومتجرك جاهز اليوم</h3>
+        <p style="color:var(--text-muted);font-size:0.95rem">بدون الحاجة لبطاقة ائتمان أو مبرمج. جهّز متجرك وانطلق فوراً بنفسك.</p>
+      </div>
+      <div style="width:180px;height:120px;background:#fafafa;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--primary-blue);border:1px solid var(--border-light)">
+        ⚡
+      </div>
+    </div>
+
+    <!-- Feature Card 2 -->
+    <div class="feature-card animate-fade-up">
+      <div style="flex:1">
+        <span style="font-size:0.85rem;color:var(--primary-blue);font-weight:800">02. ركّز على البيع</span>
+        <h3 style="font-size:1.6rem;font-weight:900;margin:6px 0 10px">كل شيء قدامك في مكان واحد</h3>
+        <p style="color:var(--text-muted);font-size:0.95rem">لوحة تحكم حية تتيح لك متابعة المبيعات، الطلبات، والعملاء بضغطة زر واحدة.</p>
+      </div>
+      <div style="width:180px;height:120px;background:#fafafa;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--primary-blue);border:1px solid var(--border-light)">
+        📊
+      </div>
+    </div>
+
+    <!-- Feature Card 3 -->
+    <div class="feature-card animate-fade-up">
+      <div style="flex:1">
+        <span style="font-size:0.85rem;color:var(--primary-blue);font-weight:800">03. زِد التحويل</span>
+        <h3 style="font-size:1.6rem;font-weight:900;margin:6px 0 10px">طلب عبر الواتساب والدفع عند الاستلام</h3>
+        <p style="color:var(--text-muted);font-size:0.95rem">حلول شراء تناسب سوقك تضمن زيادة ثقة العميل وتحويل الزائر لمشتري مؤكد.</p>
+      </div>
+      <div style="width:180px;height:120px;background:#fafafa;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--primary-blue);border:1px solid var(--border-light)">
+        💬
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING SECTION - 3 COMPLETE SUBSCRIPTION PLANS -->
+  <section id="pricing" style="background:#ffffff;padding:80px 20px">
+    <div class="sec-head animate-fade-up">
+      <span style="color:var(--primary-blue);font-weight:800;font-size:0.9rem">الخطط والأسعار</span>
+      <h2>اختر الخطة المناسبة لمتجرك 💎</h2>
+      <p>3 خطط مرنة تضمن لك البداية بدون تكاليف أو الترقية وزيادة الأرباح</p>
+    </div>
+
+    <div class="fast7-container">
+      <div class="pricing-grid-3">
+        
+        <!-- PLAN 1: FREE PLAN -->
+        <div class="plan-card-box animate-fade-up">
+          <h3 style="font-size:1.4rem;font-weight:900">الخطة المجانية</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted)">انطلق بمتجرك بـ 0 ₪ رسوم ثابتة شهرياً</p>
+
+          <div class="price-num-display">
+            0 ₪ <span>/ شهرياً</span>
+          </div>
+
+          <ul class="plan-feats-list">
+            <li><i class="fa-solid fa-check"></i> متجر إلكتروني متكامل</li>
+            <li><i class="fa-solid fa-check"></i> <strong><span class="free-fee-val">2 ₪</span> رسم فقط عند كل طلب مكتمل</strong></li>
+            <li><i class="fa-solid fa-check"></i> إضافة منتجات وتصنيفات بلا حدود</li>
+            <li><i class="fa-solid fa-check"></i> استقبال الطلبات عبر الواتساب والدفع عند الاستلام</li>
+          </ul>
+
+          <a href="create-store.html" class="btn-storify-light" style="width:100%;justify-content:center">أنشئ متجرك مجاناً</a>
+        </div>
+
+        <!-- PLAN 2: PRO MONTHLY PLAN -->
+        <div class="plan-card-box vip-plan animate-fade-up">
+          <span class="vip-badge-tag">الأكثر طلباً ⭐</span>
+          <h3 style="font-size:1.4rem;font-weight:900">الخطة الشهرية الاحترافية</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted)">إلغاء كامل لجميع رسوم وعمولات الطلبات</p>
+
+          <div class="price-num-display">
+            <span class="monthly-fee-val">100 ₪</span> <span>/ شهرياً</span>
+          </div>
+
+          <ul class="plan-feats-list">
+            <li><i class="fa-solid fa-check"></i> <strong>0 ₪ عمولة على الطلبات (إعفاء 100%)</strong></li>
+            <li><i class="fa-solid fa-check"></i> طلبات ومنتجات غير محدودة</li>
+            <li><i class="fa-solid fa-check"></i> ميزات التسويق والبانرات والعروض كاملة</li>
+            <li><i class="fa-solid fa-check"></i> دعم فني ومساعدة مباشرة</li>
+          </ul>
+
+          <a href="create-store.html" class="btn-storify-dark" style="width:100%;justify-content:center">اشترك بـ <span class="monthly-fee-val">100 ₪</span> / شهرياً</a>
+        </div>
+
+        <!-- PLAN 3: VIP ANNUAL PLAN -->
+        <div class="plan-card-box animate-fade-up">
+          <h3 style="font-size:1.4rem;font-weight:900">الخطة السنوية الملكية VIP</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted)">أقصى توفير للمتاجر الكبرى مع خدمات VIP</p>
+
+          <div class="price-num-display">
+            <span class="annual-fee-val">1000 ₪</span> <span>/ سنوياً</span>
+          </div>
+
+          <ul class="plan-feats-list">
+            <li><i class="fa-solid fa-check"></i> <strong>توفير 200 ₪ سنوياً</strong></li>
+            <li><i class="fa-solid fa-check"></i> <strong>0 ₪ عمولة على الطلبات (إعفاء 100%)</strong></li>
+            <li><i class="fa-solid fa-check"></i> نطاق خاص مجاني (.com)</li>
+            <li><i class="fa-solid fa-check"></i> دعم فني VIP وتخصيص ثيمات</li>
+          </ul>
+
+          <a href="create-store.html" class="btn-storify-light" style="width:100%;justify-content:center">اشترك بـ <span class="annual-fee-val">1000 ₪</span> / سنوياً</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Pre-footer Dark Banner -->
+  <div class="prefooter-banner animate-fade-up">
+    <h2 style="font-size:2.4rem;font-weight:1000;margin-bottom:12px">أطلق متجرك اليوم، وابدأ رحلة مبيعاتك 🚀</h2>
+    <p style="color:#aaaaaa;max-width:620px;margin:0 auto 28px">انضم لآلاف التجار اللي وثقوا في FAST7. أنشئ متجرك، ضيف منتجاتك، واستقبل أول طلب خلال دقائق.</p>
+    
+    <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
+      <a href="create-store.html" class="btn-lime">ابدأ تجربتك المجانية الآن</a>
+      <a href="../stores/default/index.html" target="_blank" class="btn-storify-light" style="background:rgba(255,255,255,0.1);color:#fff">تجربة المتجر التفاعلي</a>
+    </div>
+
+    <div style="font-size:0.82rem;color:#888888;margin-top:20px">
+      إعداد في 5 دقائق • بدون بطاقة ائتمان • إمكانية الترقية في أي وقت
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="storify-container">
+      <p>© 2026 FAST7 Platform. جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

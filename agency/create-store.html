@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>FAST7 Commerce — انضم إلينا أنشئ متجرك</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #FFFFFF;
+      --primary: #2563eb;
+      --ios-green: #34C759;
+      --text-main: #1D1D1F;
+      --text-sub: #86868B;
+      --input-bg: #F2F2F7;
+      --shadow-soft: 0 8px 30px rgba(0,0,0,0.04);
+      --logo-gradient: linear-gradient(135deg, #00f2fe, #2563eb, #7000ff);
+      --logo-shadow: 0 20px 60px rgba(37,99,235,0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Cairo', -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes cinematic-entry {
+      0% { opacity: 0; transform: scale(1.05) translateY(30px); filter: blur(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    }
+    @keyframes spring-in {
+      0% { opacity: 0; transform: translateY(40px) scale(0.9); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes splashIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes pulseGlow {
+      from { opacity: 0.3; transform: scale(0.9); }
+      to { opacity: 0.6; transform: scale(1.1); }
+    }
+    @keyframes envelope-bounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-10px) scale(1.02); }
+    }
+
+    /* Splash Screen */
+    #splashScreen {
+      position: fixed;
+      inset: 0;
+      background-color: #060812;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+    .splash-logo-box {
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f1629;
+      border-radius: 28px;
+      box-shadow: 0 0 40px rgba(0,242,254,0.3);
+      animation: splashIn 1s cubic-bezier(0.2,0.8,0.2,1) forwards;
+    }
+    .splash-logo-box i {
+      font-size: 48px;
+      color: #00f2fe;
+    }
+
+    /* Header */
+    .wizard-header {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.8s ease;
+      z-index: 100;
+    }
+    .header-visible { opacity: 1; transform: translateY(0); }
+    .back-btn {
+      color: #2563eb;
+      font-size: 15px;
+      font-weight: 800;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .step-dots { display: flex; gap: 6px; }
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #E5E5EA;
+      border-radius: 50%;
+      transition: 0.4s;
+    }
+    .dot.active {
+      background: #2563eb;
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    /* Wizard Container & Screens */
+    .wizard-container {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      perspective: 1000px;
+      opacity: 0;
+    }
+    .container-entrance { animation: cinematic-entry 1s cubic-bezier(0.2,0.8,0.2,1) forwards; }
+
+    .step-screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(15px);
+      transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.2,0.8,0.2,1);
+    }
+    .step-screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    /* Glowing Logo Container */
+    .visual-stage {
+      margin-bottom: 30px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 180px;
+    }
+    .glowing-logo-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      z-index: 10;
+    }
+    .app-logo-bg {
+      position: absolute;
+      inset: -15px;
+      background: conic-gradient(from 180deg, #00f2fe, #2563eb, #7000ff, #00f2fe);
+      border-radius: 35px;
+      opacity: 0.4;
+      filter: blur(25px);
+      animation: pulseGlow 3s infinite alternate;
+    }
+    .app-logo-icon {
+      position: absolute;
+      inset: 0;
+      background: #0f172a;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: #fff;
+      box-shadow: var(--logo-shadow);
+      z-index: 20;
+    }
+    .app-logo-icon i {
+      background: var(--logo-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Content & Inputs */
+    .step-content { text-align: center; width: 100%; max-width: 380px; }
+    .step-title { font-size: 28px; font-weight: 900; margin-bottom: 8px; color: var(--text-main); letter-spacing: -0.5px; }
+    .step-desc { font-size: 15px; color: var(--text-sub); line-height: 1.5; font-weight: 600; margin-bottom: 22px; }
+
+    .input-box { width: 100%; margin-bottom: 14px; text-align: right; }
+    .ios-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 16px 18px;
+      font-size: 16px;
+      font-family: inherit;
+      outline: none;
+      transition: 0.3s;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .ios-input:focus {
+      background: #FFFFFF;
+      border-color: #2563eb;
+      box-shadow: 0 0 15px rgba(37,99,235,0.2);
+    }
+
+    /* Footer Button - FIXED ULTRA VIBRANT BLUE BUTTON */
+    .wizard-footer {
+      padding: 0 24px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.8s ease;
+      z-index: 100;
+      max-width: 440px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .btn-main {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+      color: #ffffff !important;
+      height: 58px;
+      width: 100%;
+      border-radius: 18px;
+      border: none;
+      font-size: 17px;
+      font-weight: 900;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(37,99,235,0.4) !important;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    .btn-main:hover {
+      box-shadow: 0 14px 40px rgba(37,99,235,0.55) !important;
+      transform: translateY(-2px);
+    }
+    .btn-main:active { transform: scale(0.96); }
+
+    #errorMsg {
+      min-height: 20px;
+      color: #ef4444;
+      font-size: 14px;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    /* Success Envelope & Card */
+    .envelope-container {
+      width: 150px;
+      height: 110px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      animation: envelope-bounce 2s infinite ease-in-out;
+      z-index: 30;
+      border: 1.5px solid #F2F2F7;
+    }
+    .envelope-container i { font-size: 45px; color: #2563eb; }
+
+    #letterModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(25px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .letter-card {
+      width: 100%;
+      max-width: 380px;
+      background: #fff;
+      border-radius: 32px;
+      padding: 28px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.12);
+      border: 1.5px solid #F2F2F7;
+      text-align: right;
+    }
+    .modal-show { display: flex !important; opacity: 1 !important; }
+
+    .intro-anim { opacity: 0; }
+    .step-screen.active .intro-anim { animation: spring-in 0.8s cubic-bezier(0.2,0.8,0.2,1) forwards; }
+    .delay-1 { animation-delay: 0.1s !important; }
+    .delay-2 { animation-delay: 0.2s !important; }
+    .delay-3 { animation-delay: 0.3s !important; }
+    .delay-4 { animation-delay: 0.4s !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splashScreen">
+    <div class="splash-logo-box">
+      <i class="fa-solid fa-bolt-lightning"></i>
+    </div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="wizard-header" id="header">
+    <button class="back-btn" id="prevBtn" onclick="prevStep()"><i class="fa-solid fa-chevron-right"></i> رجوع</button>
+    <div class="step-dots" id="dotsContainer">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <a href="index.html" class="back-btn" style="color:var(--text-sub);text-decoration:none">إلغاء</a>
+  </header>
+
+  <!-- Main Wizard Screen Container -->
+  <div class="wizard-container" id="mainCard">
+
+    <!-- STEP 1: STORE & OWNER NAME -->
+    <div class="step-screen active" id="step1">
+      <div class="visual-stage intro-anim delay-1">
+        <div class="glowing-logo-container">
+          <div class="app-logo-bg"></div>
+          <div class="app-logo-icon"><i class="fa-solid fa-store"></i></div>
+        </div>
+      </div>
+      <div class="step-content">
+        <h1 class="step-title intro-anim delay-2">أهلاً بك في FAST7</h1>
+        <p class="step-desc intro-anim delay-3">لنبدأ بتجهيز متجرك الإلكتروني الجديد.</p>
+        <div class="input-box intro-anim delay-4">
+          <input type="text" id="store_name" class="ios-input" placeholder="اسم المتجر الإلكتروني">
+        </div>
+        <div class="input-box intro-anim delay-4">
+          <input type="text" id="owner_name" class="ios-input" placeholder="اسم صاحب المتجر الثلاثي">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: CREDENTIALS -->
+    <div class="step-screen" id="step2">
+      <div class="visual-stage intro-anim delay-1">
+        <div class="glowing-logo-container">
+          <div class="app-logo-bg" style="background:conic-gradient(#2563eb,#7000ff,#2563eb)"></div>
+          <div class="app-logo-icon"><i class="fa-solid fa-lock"></i></div>
+        </div>
+      </div>
+      <div class="step-content">
+        <h1 class="step-title intro-anim delay-2">بيانات الدخول</h1>
+        <p class="step-desc intro-anim delay-3">للوصول لمدير المتجر وإدارة المنتجات.</p>
+        <div class="input-box intro-anim delay-4">
+          <input type="email" id="email" class="ios-input" placeholder="البريد الإلكتروني">
+        </div>
+        <div class="input-box intro-anim delay-4">
+          <input type="password" id="password" class="ios-input" placeholder="كلمة المرور">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: CONTACT NUMBERS -->
+    <div class="step-screen" id="step3">
+      <div class="visual-stage intro-anim delay-1">
+        <div class="glowing-logo-container">
+          <div class="app-logo-bg" style="background:conic-gradient(#34C759,#10b981,#34C759)"></div>
+          <div class="app-logo-icon"><i class="fa-solid fa-phone"></i></div>
+        </div>
+      </div>
+      <div class="step-content">
+        <h1 class="step-title intro-anim delay-2">أرقام التواصل والتأكيد</h1>
+        <p class="step-desc intro-anim delay-3">لاستقبال طلبات الزبائن وتنبيهات الواتساب.</p>
+        <div class="input-box intro-anim delay-4" style="display:flex;gap:8px">
+          <select id="phone_prefix" class="ios-input" style="width:110px;font-weight:700">
+            <option value="+970">+970</option>
+            <option value="+972">+972</option>
+            <option value="+962">+962</option>
+            <option value="+966">+966</option>
+          </select>
+          <input type="tel" id="phone" class="ios-input" placeholder="رقم الهاتف / الواتساب">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: LOCATION -->
+    <div class="step-screen" id="step4">
+      <div class="visual-stage intro-anim delay-1">
+        <div class="glowing-logo-container">
+          <div class="app-logo-bg" style="background:conic-gradient(#00f2fe,#2563eb,#00f2fe)"></div>
+          <div class="app-logo-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+        </div>
+      </div>
+      <div class="step-content">
+        <h1 class="step-title intro-anim delay-2">أين يقع متجرك؟</h1>
+        <p class="step-desc intro-anim delay-3">لتحديد مناطق التوصيل والشحن.</p>
+        <div class="input-box intro-anim delay-4">
+          <input type="text" id="city" class="ios-input" placeholder="المدينة (مثال: القدس / رام الله / غزة)">
+        </div>
+        <div class="input-box intro-anim delay-4">
+          <input type="text" id="area" class="ios-input" placeholder="اسم المنطقة أو الحي">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5: STORE CATEGORY & PLAN -->
+    <div class="step-screen" id="step5">
+      <div class="visual-stage intro-anim delay-1">
+        <div class="glowing-logo-container">
+          <div class="app-logo-bg" style="background:conic-gradient(#ffb703,#ff4d00,#ffb703)"></div>
+          <div class="app-logo-icon"><i class="fa-solid fa-layer-group"></i></div>
+        </div>
+      </div>
+      <div class="step-content">
+        <h1 class="step-title intro-anim delay-2">النشاط وخطة الاشتراك</h1>
+        <div class="input-box intro-anim delay-4">
+          <select id="store_type" class="ios-input" style="font-weight:700">
+            <option value="">— اختر نوع النشاط التجاري —</option>
+            <option value="fashion">👕 ملابس وأزياء وموضة</option>
+            <option value="electronics">📱 موبايلات وإلكترونيات</option>
+            <option value="perfumes">✨ عطور ومستحضرات تجميل</option>
+            <option value="restaurant">🍽️ مطاعم ومأكولات</option>
+            <option value="supermarket">🛒 سوبرماركت ومواد غذائية</option>
+            <option value="home">🏠 أدوات ومستلزمات منزلية</option>
+            <option value="other">📦 نشاط آخر عام</option>
+          </select>
+        </div>
+        <div class="input-box intro-anim delay-4">
+          <select id="store_plan" class="ios-input" style="font-weight:700">
+            <option value="free">الخطة المجانية (0 ₪ + 2 ₪ / طلب)</option>
+            <option value="monthly">الخطة الشهرية (100 ₪ / شهرياً - 0₪ عمولات)</option>
+            <option value="annual">الخطة السنوية الملكية (1000 ₪ / سنوياً)</option>
+          </select>
+        </div>
+        <div class="intro-anim delay-4" style="display:flex;align-items:center;gap:10px;padding:8px;justify-content:center">
+          <input type="checkbox" id="terms_agree" checked style="width:20px;height:20px;accent-color:#2563eb">
+          <label for="terms_agree" style="font-size:14px;font-weight:700;color:#1D1D1F">أوافق على كافة الشروط وأحكام المنصة</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUCCESS SCREEN -->
+    <div class="step-screen" id="successStep">
+      <div class="visual-stage">
+        <div class="envelope-container" id="envelope" onclick="openSummaryModal()">
+          <i class="fa-solid fa-envelope-open-text"></i>
+        </div>
+      </div>
+      <div class="step-content">
+        <h1 class="step-title">شكراً لانضمامك إلى FAST7! 🎉</h1>
+        <p class="step-desc" style="font-size:14px">تم إرسال طلبك بنجاح، وسيتواصل معك الفريق لتأكيد المتجر.</p>
+        <span style="font-size:14px;font-weight:800;color:#2563eb;cursor:pointer" onclick="openSummaryModal()">
+          <i class="fa-solid fa-hand-pointer"></i> اضغط لفتح بطاقة المتجر
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SUMMARY MODAL -->
+  <div id="letterModal">
+    <div class="letter-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;border-bottom:2px dashed #F2F2F7;padding-bottom:15px">
+        <i class="fa-solid fa-circle-check" style="font-size:28px;color:var(--ios-green)"></i>
+        <div>
+          <h2 style="font-size:20px;font-weight:900;color:#1D1D1F">بطاقة متجر FAST7</h2>
+          <p style="font-size:12px;color:var(--text-sub)">FAST7 Commerce Engine</p>
+        </div>
+      </div>
+      <div id="resSummary" style="font-size:14px;text-align:right;color:#1D1D1F"></div>
+      <a href="../admin.html" class="btn-main" style="margin-top:20px;text-decoration:none">فهمت، ابدأ الرحلة 🚀</a>
+    </div>
+  </div>
+
+  <!-- FOOTER ACTION BUTTON -->
+  <footer class="wizard-footer" id="footer">
+    <button class="btn-main" id="nextBtn" onclick="nextStep()">
+      <span>متابعة</span> <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <div id="errorMsg"></div>
+  </footer>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 5;
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('splashScreen').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('splashScreen').style.display = 'none';
+          document.getElementById('mainCard').classList.add('container-entrance');
+          document.getElementById('header').classList.add('header-visible');
+          document.getElementById('footer').classList.add('header-visible');
+          document.getElementById('step1').classList.add('active');
+        }, 600);
+      }, 1000);
+    });
+
+    function updateStepUI() {
+      document.querySelectorAll('.step-screen').forEach((el, i) => {
+        el.classList.toggle('active', i + 1 === currentStep);
+      });
+      document.querySelectorAll('.dot').forEach((d, i) => {
+        d.classList.toggle('active', i + 1 === currentStep);
+      });
+      document.getElementById('prevBtn').style.display = (currentStep > 1 && currentStep <= totalSteps) ? 'block' : 'none';
+
+      const btnText = currentStep === totalSteps ? 'إرسال الطلب وإطلاق المتجر 🚀' : 'متابعة الخطوة التالية';
+      const btnIcon = currentStep === totalSteps ? 'fa-rocket' : 'fa-arrow-left';
+      document.getElementById('nextBtn').innerHTML = `<span>${btnText}</span><i class="fa-solid ${btnIcon}"></i>`;
+    }
+
+    function validateStep(s) {
+      const err = document.getElementById('errorMsg');
+      err.textContent = '';
+      const val = id => document.getElementById(id).value.trim();
+
+      if (s === 1 && (!val('store_name') || !val('owner_name'))) {
+        err.textContent = '⚠️ يرجى أدخال اسم المتجر واسم صاحب المتجر الثلاثي';
+        return false;
+      }
+      if (s === 2 && (!val('email').includes('@') || !val('password'))) {
+        err.textContent = '⚠️ البريد الإلكتروني أو كلمة المرور غير صحيحة';
+        return false;
+      }
+      if (s === 3 && !val('phone')) {
+        err.textContent = '⚠️ رقم الهاتف / الواتساب مطلوب';
+        return false;
+      }
+      if (s === 4 && (!val('city') || !val('area'))) {
+        err.textContent = '⚠️ يرجى أدخال المدينة والمنطقة';
+        return false;
+      }
+      if (s === 5 && !val('store_type')) {
+        err.textContent = '⚠️ اختر نوع النشاط التجاري';
+        return false;
+      }
+      if (s === 5 && !document.getElementById('terms_agree').checked) {
+        err.textContent = '⚠️ يرجى الموافقة على الشروط والأحكام';
+        return false;
+      }
+      return true;
+    }
+
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        if (!validateStep(currentStep)) return;
+        currentStep++;
+        updateStepUI();
+      } else if (currentStep === totalSteps) {
+        if (!validateStep(currentStep)) return;
+        submitStoreRegistration();
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepUI();
+      }
+    }
+
+    function submitStoreRegistration() {
+      const btn = document.getElementById('nextBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span>جاري الإرسال وتفعيل المتجر...</span>';
+
+      const phoneFull = document.getElementById('phone_prefix').value + ' ' + document.getElementById('phone').value.trim();
+
+      const reqData = {
+        id: Date.now(),
+        date: new Date().toLocaleString('ar-SA'),
+        ownerName: document.getElementById('owner_name').value.trim(),
+        ownerEmail: document.getElementById('email').value.trim(),
+        ownerPhone: phoneFull,
+        storeTitle: document.getElementById('store_name').value.trim(),
+        subdomain: (document.getElementById('store_name').value.trim().replace(/\s+/g, '-')).toLowerCase(),
+        category: document.getElementById('store_type').value,
+        city: document.getElementById('city').value.trim() + ' - ' + document.getElementById('area').value.trim(),
+        plan: document.getElementById('store_plan').value,
+        status: 'pending'
+      };
+
+      const raw = localStorage.getItem('mycart_agency_store_requests');
+      let reqs = [];
+      if (raw) { try { reqs = JSON.parse(raw); } catch(ex) {} }
+      reqs.unshift(reqData);
+
+      try { localStorage.setItem('mycart_agency_store_requests', JSON.stringify(reqs)); } catch(ex) {}
+      try { localStorage.setItem('mycart_subscription_plan', reqData.plan); } catch(ex) {}
+
+      setTimeout(() => {
+        currentStep = 6;
+        document.querySelectorAll('.step-screen').forEach((el, i) => {
+          el.classList.toggle('active', i === 5);
+        });
+        document.getElementById('footer').style.display = 'none';
+        document.getElementById('header').style.display = 'none';
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      }, 1000);
+    }
+
+    function openSummaryModal() {
+      document.getElementById('letterModal').classList.add('modal-show');
+      const st = document.getElementById('store_type');
+      document.getElementById('resSummary').innerHTML = `
+        <div style="margin-bottom:12px;border-bottom:1px solid #f0f0f0;padding-bottom:8px"><strong>اسم المتجر:</strong> ${document.getElementById('store_name').value}</div>
+        <div style="margin-bottom:12px;border-bottom:1px solid #f0f0f0;padding-bottom:8px"><strong>صاحب المتجر:</strong> ${document.getElementById('owner_name').value}</div>
+        <div style="margin-bottom:12px;border-bottom:1px solid #f0f0f0;padding-bottom:8px"><strong>العنوان:</strong> ${document.getElementById('city').value} - ${document.getElementById('area').value}</div>
+        <div style="margin-bottom:12px;border-bottom:1px solid #f0f0f0;padding-bottom:8px"><strong>النشاط التجاري:</strong> ${st.options[st.selectedIndex].text}</div>
+        <div><strong>الهاتف والواتساب:</strong> ${document.getElementById('phone').value}</div>
+      `;
+    }
+  </script>
+</body>
+</html>
