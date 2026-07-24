@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, make_response
+from flask import Flask, request, jsonify, send_from_directory, make_response, send_file
 from flask_cors import CORS
 import json, os, uuid, base64, shutil, re, mimetypes
 from datetime import datetime, timedelta
@@ -611,73 +611,86 @@ def handle_custom_domains():
 # ----------------------------------------------------------------
 @app.route('/')
 def index():
-    resp = make_response(send_from_directory(ROOT_DIR, 'index.html'))
+    resp = make_response(send_file(os.path.join(ROOT_DIR, 'index.html')))
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     return resp
 
 @app.route('/login')
 @app.route('/login.html')
 def route_login():
-    resp = make_response(send_from_directory(AGENCY_DIR, 'login.html'))
-    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    return resp
+    p = os.path.join(AGENCY_DIR, 'login.html')
+    if os.path.exists(p):
+        resp = make_response(send_file(p))
+        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return resp
+    return jsonify({'error': 'Login page not found'}), 404
 
 @app.route('/create-store')
 @app.route('/create-store.html')
 def route_create_store():
-    resp = make_response(send_from_directory(AGENCY_DIR, 'create-store.html'))
-    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    return resp
+    p = os.path.join(AGENCY_DIR, 'create-store.html')
+    if os.path.exists(p):
+        resp = make_response(send_file(p))
+        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return resp
+    return jsonify({'error': 'Create store page not found'}), 404
 
 @app.route('/dashboard')
 @app.route('/dashboard.html')
 def route_dashboard():
-    resp = make_response(send_from_directory(AGENCY_DIR, 'dashboard.html'))
-    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    return resp
+    p = os.path.join(AGENCY_DIR, 'dashboard.html')
+    if os.path.exists(p):
+        resp = make_response(send_file(p))
+        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return resp
+    return jsonify({'error': 'Dashboard page not found'}), 404
 
 @app.route('/store-details')
 @app.route('/store-details.html')
 def route_store_details():
-    resp = make_response(send_from_directory(AGENCY_DIR, 'store-details.html'))
-    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    return resp
+    p = os.path.join(AGENCY_DIR, 'store-details.html')
+    if os.path.exists(p):
+        resp = make_response(send_file(p))
+        resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return resp
+    return jsonify({'error': 'Store details page not found'}), 404
 
 @app.route('/stores/<store_id>')
 @app.route('/stores/<store_id>/')
 def serve_store_index(store_id):
     folder = store_id
-    store_dir = os.path.join('stores', folder)
+    store_dir = os.path.join(STORES_DIR, folder)
     if not os.path.exists(store_dir):
-        if os.path.exists('stores'):
-            for sf in os.listdir('stores'):
-                cfg_p = os.path.join('stores', sf, 'store.config.json')
+        if os.path.exists(STORES_DIR):
+            for sf in os.listdir(STORES_DIR):
+                cfg_p = os.path.join(STORES_DIR, sf, 'store.config.json')
                 if os.path.exists(cfg_p):
                     cfg = load_json(cfg_p, {})
                     if str(cfg.get('id')) == str(store_id):
                         folder = sf; break
-    store_index = os.path.join('stores', folder, 'index.html')
+    store_index = os.path.join(STORES_DIR, folder, 'index.html')
     if os.path.exists(store_index):
-        resp = make_response(send_from_directory(os.path.join('stores', folder), 'index.html'))
+        resp = make_response(send_file(store_index))
         resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         return resp
     return jsonify({'error': 'Store not found'}), 404
 
 @app.route('/stores/<store_id>/admin')
+@app.route('/stores/<store_id>/admin.html')
 def serve_store_admin(store_id):
     folder = store_id
-    store_dir = os.path.join('stores', folder)
+    store_dir = os.path.join(STORES_DIR, folder)
     if not os.path.exists(store_dir):
-        if os.path.exists('stores'):
-            for sf in os.listdir('stores'):
-                cfg_p = os.path.join('stores', sf, 'store.config.json')
+        if os.path.exists(STORES_DIR):
+            for sf in os.listdir(STORES_DIR):
+                cfg_p = os.path.join(STORES_DIR, sf, 'store.config.json')
                 if os.path.exists(cfg_p):
                     cfg = load_json(cfg_p, {})
                     if str(cfg.get('id')) == str(store_id):
                         folder = sf; break
-    store_admin = os.path.join('stores', folder, 'admin.html')
+    store_admin = os.path.join(STORES_DIR, folder, 'admin.html')
     if os.path.exists(store_admin):
-        resp = make_response(send_from_directory(os.path.join('stores', folder), 'admin.html'))
+        resp = make_response(send_file(store_admin))
         resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         return resp
     return jsonify({'error': 'Store admin not found'}), 404
